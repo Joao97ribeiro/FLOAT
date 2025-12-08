@@ -1,0 +1,4 @@
+# Generic analysis options where nothing is run
+general:
+    folder_output: float_outputs_tower_fatigue
+    fname_output: tower_fatigue_22mw
