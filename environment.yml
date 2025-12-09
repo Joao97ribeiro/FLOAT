@@ -9,7 +9,7 @@ dependencies:
   - make
   - matplotlib
   - meson
-  - moorpy
+  - moorpy=1.1.0
   - ninja
   - nlopt<=2.8
   - numpy
