@@ -8,6 +8,130 @@ from wisdem.commonse import NFREQ, gravity
 
 RIGID = 1e30
 
+class TowerFatigueDamage(om.ExplicitComponent):
+    """
+    Tower fatigue damage model based on the FLOAT methodology.
+
+    This component implements the lightweight fatigue model proposed in the paper:
+
+        "FLOAT: Fatigue-Aware Design Optimization of Floating Offshore Wind Turbine Towers"
+        João Alves Ribeiro, Francisco Pimenta, Bruno Alves Ribeiro, Sérgio M. O. Tavares, Faez Ahmed
+
+    The model estimates the cumulative fatigue damage of a new tower design by scaling
+    from a high-fidelity reference fatigue solution using analytical relationships based
+    on tower radius and wall thickness. This enables fast fatigue re-evaluation during
+    iterative design optimization without requiring full aero-hydro-servo-elastic
+    re-simulation at each iteration.
+
+    Options
+    -------
+    m : float, [-]
+        S–N curve slope used in the fatigue scaling law.
+    k : float, [-]
+        Exponent controlling the contribution of wall thickness and reference thickness.
+    t_ref : float, [m]
+        Reference wall thickness used in the fatigue scaling.
+    tower_ref_grid : numpy array[n_height], [m]
+        Reference tower grid coordinates along the tower axis.
+    tower_ref_outer_diameter : numpy array[n_height], [m]
+        Outer diameter distribution of the reference tower.
+    tower_ref_wall_thickness : numpy array[n_height-1], [m]
+        Wall thickness distribution of the reference tower.
+    tower_ref_z : numpy array[n_height], [m]
+        Reference tower z-coordinates along the tower axis (tower-only, without transition piece).
+    tower_ref_section_damage : numpy array[n_height-1], [-]
+        Reference cumulative fatigue damage per tower section obtained from full OpenFAST
+        simulations.
+    n_height : int
+        Number of height grid points along the tower.
+
+    Parameters
+    ----------
+    tower_outer_diameter : numpy array[n_height], [m]
+        Outer diameter of the current tower design.
+    tower_wall_thickness : numpy array[n_height-1], [m]
+        Wall thickness of the current tower design.
+    tower_s : numpy array[n_height], [m]
+        Tower grid along the axial direction. Must match ``tower_ref_grid``.
+    z_param : numpy array[n_height], [m]
+        z-coordinates of the full support structure including the transition piece.
+    transition_piece_height : float, [m]
+        Height of the transition piece removed from ``z_param`` to obtain the tower-only grid.
+
+    Returns
+    -------
+    fatigue_z : numpy array[n_height-1], [m]
+        Mid-height coordinates of each tower section where fatigue damage is evaluated.
+    fatigue_c : numpy array[n_height-1], [-]
+        Geometry-independent fatigue scaling coefficient for each tower section,
+        as defined in the FLOAT model.
+    fatigue_section_damage : numpy array[n_height-1], [-]
+        Scaled cumulative fatigue damage of the current tower design obtained using
+        the FLOAT fatigue-aware lightweight model.
+    """
+    
+    def initialize(self):
+        self.options.declare('m')
+        self.options.declare('k')
+        self.options.declare('t_ref')
+        self.options.declare('tower_ref_grid')
+        self.options.declare('tower_ref_outer_diameter')
+        self.options.declare('tower_ref_wall_thickness')
+        self.options.declare('tower_ref_z')
+        self.options.declare('tower_ref_section_damage')
+        self.options.declare("n_height")
+
+    def setup(self):
+        n_height = self.options["n_height"]
+        
+        self.add_input('tower_outer_diameter', np.zeros(n_height), units='m')
+        self.add_input('tower_wall_thickness', np.zeros(n_height-1), units='m')
+        self.add_input('tower_s', np.zeros(n_height), units='m')
+        self.add_input('z_param', np.zeros(n_height), units='m')
+        self.add_input('transition_piece_height', np.zeros(1), units='m')
+        
+        self.add_output('fatigue_z', np.zeros(n_height-1))        
+        self.add_output('fatigue_c', np.zeros(n_height-1))
+        self.add_output('fatigue_section_damage', np.zeros(n_height-1))
+
+    def compute(self, inputs, outputs):
+        m = self.options['m']
+        k = self.options['k']
+        t_ref = self.options['t_ref']
+        tower_ref_grid = np.array(self.options['tower_ref_grid'])
+        tower_ref_outer_diameter = np.array(self.options['tower_ref_outer_diameter'])
+        tower_ref_wall_thickness = np.array(self.options['tower_ref_wall_thickness'])
+        tower_ref_z = np.array(self.options['tower_ref_z'])
+        tower_ref_section_damage = np.array(self.options['tower_ref_section_damage'])
+        
+        outer_diameter = inputs['tower_outer_diameter']
+        wall_thickness = inputs['tower_wall_thickness']
+        grid = inputs['tower_s']
+        original_z_coords = inputs['z_param']
+        transition_piece_height = inputs['transition_piece_height']
+        adjusted_z_coords = [float(z_i - transition_piece_height) for z_i in original_z_coords]
+        
+        if not np.allclose(grid, tower_ref_grid, atol=1e-5):
+            raise ValueError("tower_s does not match tower_ref_grid.")
+        if not np.allclose(adjusted_z_coords, tower_ref_z, atol=1e-5):
+            raise ValueError("z_param does not match tower_ref_z.")
+        
+        fatigue_z = (tower_ref_z[:-1] + tower_ref_z[1:]) / 2
+        outputs['fatigue_z'] = fatigue_z
+        
+        tower_ref_outer_radius = tower_ref_outer_diameter/2
+        tower_ref_outer_mean_radius_section = (tower_ref_outer_radius[:-1] + tower_ref_outer_radius[1:]) / 2
+        
+        outer_radius =outer_diameter/2
+        outer_mean_radius_section = (outer_radius[:-1] + outer_radius[1:]) / 2
+     
+        log_c = np.log10(tower_ref_section_damage) + 2*m*np.log10(tower_ref_outer_mean_radius_section) + m*(1-k)*np.log10(tower_ref_wall_thickness*1000) + k*m*np.log10(t_ref)
+        outputs['fatigue_c'] = 10 ** log_c
+        
+        log_damage = log_c - 2*m*np.log10(outer_mean_radius_section) - m*(1-k)*np.log10(wall_thickness*1000) - k*m*np.log10(t_ref)
+        outputs['fatigue_section_damage'] = 10 ** log_damage
+        
+        
 class PreDiscretization(om.ExplicitComponent):
     """
     Process some of the tower YAML inputs.
@@ -591,6 +715,23 @@ class TowerSEPerf(om.Group):
             ],
         )
 
+        # Fatigue Module (FLOAT) 
+        if 'fatigue' in mod_opt:
+            fatigue_opts = mod_opt['fatigue']
+            fatique_tower_ref = fatigue_opts['tower_ref']
+            self.add_subsystem('tower_fatigue_damage',
+                            TowerFatigueDamage(n_height=n_height, 
+                                                m=fatigue_opts['m'], 
+                                                k=fatigue_opts['k'],  
+                                                t_ref=fatigue_opts['t_ref'], 
+                                                tower_ref_grid=fatique_tower_ref['grid'],
+                                                tower_ref_outer_diameter=fatique_tower_ref['outer_diameter'],
+                                                tower_ref_wall_thickness=fatique_tower_ref['wall_thickness'],
+                                                tower_ref_z=fatique_tower_ref['z'],
+                                                tower_ref_section_damage=fatique_tower_ref['section_damage']),
+                            promotes_inputs=['tower_outer_diameter', 'tower_wall_thickness', 'tower_s', 'z_param', 'transition_piece_height'],
+                            promotes_outputs=['fatigue_z', 'fatigue_c', 'fatigue_section_damage'])
+            
         self.connect("tower.tower_Fz", "post.cylinder_Fz")
         self.connect("tower.tower_Vx", "post.cylinder_Vx")
         self.connect("tower.tower_Vy", "post.cylinder_Vy")
