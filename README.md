@@ -1,80 +1,215 @@
-# WISDEM&reg;
+<p align="center">
+  <img src="./images/float_logo.png" alt="FLOAT Logo" width="300">
+</p>
 
-[![Actions Status](https://github.com/WISDEM/WISDEM/workflows/CI_WISDEM/badge.svg?branch=develop)](https://github.com/WISDEM/WISDEM/actions)
-[![Coverage Status](https://coveralls.io/repos/github/WISDEM/WISDEM/badge.svg?branch=develop)](https://coveralls.io/github/WISDEM/WISDEM?branch=develop)
-[![Documentation Status](https://readthedocs.org/projects/wisdem/badge/?version=master)](https://wisdem.readthedocs.io/en/master/?badge=master)
+# FLOAT: Fatigue-Aware Design Optimization of Wind Turbine Towers
+<p align="center">
+  <a href="https://arxiv.org/abs/2502.02594">
+    <img src="https://img.shields.io/badge/arXiv-2502.02594-b31b1b.svg">
+  </a>
+  <a href="https://www.apache.org/licenses/LICENSE-2.0">
+    <img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg">
+  </a>
+</p>
+
+<p align="center"><strong>Fast tower fatigue estimation during design optimization, without rerunning high-fidelity simulations.</strong></p>
 
 
-The Wind-Plant Integrated System Design and Engineering Model (WISDEM&reg;) is a set of models for assessing overall wind plant cost of energy (COE). The models use wind turbine and plant cost and energy production as well as financial models to estimate COE and other wind plant system attributes. WISDEM&reg; is accessed through Python, is built using [OpenMDAO](https://openmdao.org/), and uses several sub-models that are also implemented within OpenMDAO. These sub-models can be used independently but they are required to use the overall WISDEM&reg; turbine design capability. Please install all of the pre-requisites prior to installing WISDEM&reg; by following the directions below. For additional information about the NWTC effort in systems engineering that supports WISDEM&reg; development, please visit the official [NREL systems engineering for wind energy website](https://www.nrel.gov/wind/systems-engineering.html).
+**FLOAT** is a **lightweight fatigue-aware tower design framework** integrated into [WISDEM](https://github.com/wisdem). It enables **fast estimation of cumulative tower fatigue damage** by scaling precomputed high-fidelity fatigue results from a reference wind turbine tower to any new tower geometry under evaluation.
 
-Author: [NREL WISDEM Team](mailto:systems.engineering@nrel.gov)
+This allows **fatigue-aware analysis and design optimization** to be performed **without rerunning expensive aero-hydro-servo-elastic simulations**, reducing computational cost by several orders of magnitude while maintaining validated accuracy with low error.
+
+<p align="center">
+  <img src="./images/float_workflow.png" alt="FLOAT workflow" width="1000">
+</p>
+
+### Authors: 
+- **João Alves Ribeiro** (MIT & University of Porto) — [jpar@mit.edu](mailto:jpar@mit.edu)
+- **Francisco Pimenta** (University of Porto)
+- **Bruno Alves Ribeiro** (TU Delft & Brown University)
+- **Sérgio M. O. Tavares** (University of Aveiro)
+- **Faez Ahmed** (MIT) — [faez@mit.edu](mailto:faez@mit.edu)
+
+
+## FLOAT Paper 
+
+**FLOAT** is presented in the following scientific paper, where the methodology implemented in this repository is fully described and validated: [**FLOAT: Fatigue-Aware Design Optimization of Wind Turbine Towers**](https://arxiv.org/abs/2502.02594).
+
+<p align="center">
+  <img src="./images/float_paper_abstract.png" alt="FLOAT paper abstract" width="1000">
+</p>
+
+Using the **FLOAT** methodology, the [**IEA 22 MW**](https://github.com/IEAWindSystems/IEA-22-280-RWT) floating reference tower was successfully redesigned under fatigue constraints, achieving:
+- **Fatigue lifetime extension:** from **~9 months to 25 years** (**~33× increase in fatigue life**)  
+- **Validation accuracy:** agreement with **6,468 coupled wind–wave high-fidelity OpenFAST simulations** with a **mean relative error of −8.6%**  
+- **Computational speed-up:** FLOAT removes the need to re-run full aero-hydro-servo-elastic simulations during redesign, cutting computational cost by **several orders of magnitude** compared with traditional fatigue-driven design loops.
+
+The final redesigned tower configuration is openly available here: [**FLOAT-22-280-RWT-Semi**](https://github.com/Joao97ribeiro/FLOAT-22-280-RWT-Semi).
+
+The paper introduces the full **FLOAT architecture**:
+
+<p align="center">
+  <img src="./images/float_paper_workflow.png" alt="FLOAT paper workflow" width="1000">
+</p>
+
+**Note:** This repository currently includes **only Module 6: the Fatigue Estimator**, which corresponds to the lightweight fatigue scaling model.
+
+The remaining components of the full FLOAT framework:
+
+- **1. Wind–Wave Sampler:** Probabilistic wind–wave sampling.
+- **2. Numerical Simulator:** High-fidelity OpenFAST calibration and HPC-based large-scale simulation workflows.
+- **3. Frequency Analyzer:** Spectral stress processing.
+- **4. Fatigue Analyzer:** Fatigue damage accumulation.
+
+are planned to be released as open-source in future updates. The **5. Design Optimizer** is already implemented in **WISDEM**.
+
+
+## What FLOAT Adds to WISDEM
+
+This repository extends the native **_TowerSE_** module of **WISDEM** with a new **fatigue-aware model** for fast tower fatigue assessment and optimization.
+
+Key additions include:
+- A new `fatigue` block in the **TowerSE modeling options input file**.
+- Native integration with the **WISDEM optimization workflow** for fatigue-aware tower design and optimization.
+
+All remaining WISDEM modules remain unchanged and follow the official upstream implementation.
+
+
+## How to Use FLOAT
+
+To activate **FLOAT**, a `fatigue` block must be added to the **TowerSE modeling options input file**, following the structure below:
+
+```yaml
+WISDEM:
+  TowerSE:
+    flag: True
+
+    fatigue:
+      m: ...
+      k: ...
+      t_ref: ...
+
+      tower_ref:
+        grid: [...]
+        outer_diameter: [...]
+        wall_thickness: [...]
+        z: [...]
+        section_damage: [...]
+```
+
+where, for a tower with $N$ sections:
+
+- The **material fatigue properties**:
+  - `m` (float): S–N curve slope  
+  - `k` (float): thickness exponent  
+  - `t_ref` (float): reference design lifetime [years]  
+
+- The **reference tower geometry**:
+  - `grid` (array, size $N+1$): normalized vertical coordinate at each **section transition** along the tower (0 = base, 1 = top)
+  - `outer_diameter` (array, size $N+1$): outer diameter at each **section transition** of the reference tower [m]
+  - `wall_thickness` (array, size $N$): wall thickness at each **tower section** [m]
+  - `z` (array, size $N+1$): physical height coordinate at each **section transition** [m]
+
+- The **high-fidelity reference fatigue damage distribution**:
+  - `section_damage` (array, size $N$): cumulative fatigue damage per **tower section**, evaluated at the **section midpoint**
+
+
+## Integration with the WISDEM Workflow
+
+FLOAT integrates directly into the standard WISDEM workflow, which is based on three standard input files:
+
+- **Modeling options file** (e.g. `modeling_options.yaml`)  
+  This is where FLOAT is activated through the `fatigue` block inside the `TowerSE` section.
+
+- **Turbine input file** (e.g. `IEA-22-280-RWT.yaml`)  
+  Standard WISDEM turbine definition including geometry, materials, and main properties.
+
+- **Analysis options file** (e.g. `analysis_options.yaml`)  
+  Standard WISDEM simulation setup, load cases, and optional optimization configuration.
+
+After defining these three files, WISDEM is executed normally.  
+During the **TowerSE** execution, FLOAT automatically computes the fatigue damage for the new tower design **without re-running high-fidelity simulations**.
+
+
+## Examples
+
+The repository includes **two example cases** demonstrating how to run **fatigue-aware tower analysis with FLOAT inside WISDEM**.
+
+Both examples use the [**IEA-22-280-RWT**](https://github.com/IEAWindSystems/IEA-22-280-RWT) reference turbine.
+
+<p align="center">
+  <img src="./images/iea_22mw.gif" alt="IEA 22 MW Floating Wind Turbine" width="300">
+</p>
+
+- [`examples/01_tower_fatigue_analysis/`](./examples/01_tower_fatigue_analysis)  
+  **Fatigue-Aware Tower Analysis (IEA 22 MW)** — Performs fatigue post-processing of the reference tower using the FLOAT lightweight scaling model.
+
+- [`examples/02_tower_fatigue_analysis/`](./examples/02_tower_fatigue_analysis)  
+  **Fatigue-Aware Tower Optimization (IEA 22 MW)** — Demonstrates the integration of FLOAT inside a tower design optimization loop, where fatigue damage directly influences the optimized tower geometry.
+
 
 ## Documentation
 
-See local documentation in the `docs`-directory or access the online version at <https://wisdem.readthedocs.io/en/master/>
-
-## Packages
-
-WISDEM&reg; is a family of modules.  The core modules are:
-
-* _CommonSE_ includes several libraries shared among modules
-* _FloatingSE_ works with the floating platforms
-* _DrivetrainSE_ sizes the drivetrain and generator systems (formerly DriveSE and GeneratorSE)
-* _TowerSE_ is a tool for tower (and monopile) design
-* _RotorSE_ is a tool for rotor design
-* _NREL CSM_ is the regression-based turbine mass, cost, and performance model
-* _ORBIT_ is the process-based balance of systems cost model for offshore plants
-* _LandBOSSE_ is the process-based balance of systems cost model for land-based plants
-* _Plant_FinanceSE_ runs the financial analysis of a wind plant
-
-The core modules draw upon some utility packages, which are typically compiled code with python wrappers:
-
-* _Airfoil Preppy_ is a tool to handle airfoil polar data
-* _CCBlade_ is the BEM module of WISDEM
-* _pyFrame3DD_ brings libraries to handle various coordinate transformations
-* _MoorPy_ is a quasi-static mooring line model
-* [_pyOptSparse_](https://github.com/mdolab/pyoptsparse) provides some additional optimization algorithms to OpenMDAO
+The theoretical background and validation of the method are fully presented in the [**FLOAT paper**](https://arxiv.org/abs/2502.02594).  
+Practical usage is demonstrated through the [`examples/`](./examples) scripts and inline docstrings provided in this repository.
 
 
 ## Installation
 
-Installation with [Anaconda](https://www.anaconda.com) is the recommended approach because of the ability to create self-contained environments suitable for testing and analysis.  WISDEM&reg; requires [Anaconda 64-bit](https://www.anaconda.com/distribution/).  However, the `conda` command has begun to show its age and we now recommend the one-for-one replacement with the [Miniforge3 distribution](https://github.com/conda-forge/miniforge?tab=readme-ov-file#miniforge3), which is much more lightweight and more easily solves for the WISDEM package dependencies.
+**FLOAT** runs inside a dedicated Conda environment for full compatibility with [WISDEM](https://github.com/WISDEM/WISDEM).
 
-### Installation as a "library"
-
-To use WISDEM's modules as a library for incorporation into other scripts or tools, WISDEM is available via `conda install wisdem` or `pip install wisdem`, assuming that you have already setup your python environment.  Note that on Windows platforms, we suggest using `conda` exclusively.
-
-### Installation for direct use
-
-These instructions are for interaction with WISDEM directly, the use of its examples, and the direct inspection of its source code.
-
-The installation instructions below use the environment name, "wisdem-env," but any name is acceptable.  For those working behind company firewalls, you may have to change the conda authentication with `conda config --set ssl_verify no`.  Proxy servers can also be set with `conda config --set proxy_servers.http http://id:pw@address:port` and `conda config --set proxy_servers.https https://id:pw@address:port`. To setup an environment based on a different Github branch of WISDEM, simply substitute the branch name for `master` in the setup line.
-
-1.  Setup and activate the Anaconda environment from a prompt (Anaconda3 Power Shell on Windows or Terminal.app on Mac)
-
-        conda config --add channels conda-forge
-        conda install git
-        git clone https://github.com/WISDEM/WISDEM.git
-        cd WISDEM
-        conda env create --name wisdem-env -f environment.yml
-        conda activate wisdem-env
-
-2.  In order to directly use the examples in the repository and peek at the code when necessary, we recommend all users install WISDEM in *developer / editable* mode using the instructions here.  If you really just want to use WISDEM as a library and lean on the documentation, you can always do `conda install wisdem` and be done.  Note the differences between Windows and Mac/Linux build systems. For Linux, we recommend using the native compilers (for example, gcc and gfortran in the default GNU suite).
-
-        conda install -y petsc4py=3.22.2 mpi4py                 # (Mac / Linux only)
-        conda install -y gfortran                        # (Mac only without Homebrew or Macports compilers)
-        conda install -y m2w64-toolchain libpython       # (Windows only)
-        pip install --no-deps -e . -v
+We recommend using [Miniforge3](https://github.com/conda-forge/miniforge) as a lightweight and more reliable alternative to [Anaconda](https://www.anaconda.com) for faster and more robust dependency resolution.
 
 
-**NOTE:** To use WISDEM again after installation is complete, you will always need to activate the conda environment first with `conda activate wisdem-env`
+### 1. Create the Conda Environment
+```bash
+git clone https://github.com/Joao97ribeiro/FLOAT.git
+cd FLOAT
+conda env create -n float-env -f environment.yml
+conda activate float-env
+```
+The environment name `"float-env"` is only a suggestion. You may choose any name.
 
-For Windows users, we recommend installing `git` and the `m2w64` packages in separate environments as some of the libraries appear to conflict such that WISDEM cannot be successfully built from source.  The `git` package is best installed in the `base` environment.
+### 2.  Install FLOAT in Developer Mode
+```bash
+pip install --no-deps -e . -v
+```
 
-## Run Unit Tests
 
-Each package has its own set of unit tests.  These can be run in batch with the `test_all.py` script located in the top level `test`-directory.
+## License
 
-## Feedback
+This project is licensed under the **Apache License 2.0**.  
+See the [LICENSE](./LICENSE) file for full details or view it online at: [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
-For software issues please use <https://github.com/WISDEM/WISDEM/issues>.  For functionality and theory related questions and comments please use the NWTC forum for [Systems Engineering Software Questions](https://wind.nrel.gov/forum/wind/viewtopic.php?f=34&t=1002).
+
+## Citations
+
+If you use **FLOAT** in your work, please cite:
+
+> *FLOAT: Fatigue-Aware Design Optimization of Wind Turbine Towers.*  
+> João Alves Ribeiro, Francisco Pimenta, Bruno Alves Ribeiro, Sérgio M. O. Tavares, Faez Ahmed.  
+> arXiv:2502.02594, 2025.  
+> https://arxiv.org/abs/2502.02594
+
+<details>
+<summary>BibTeX</summary>
+
+```bibtex
+@article{ribeiro2025float,
+  title   = {FLOAT: Fatigue-Aware Design Optimization of Wind Turbine Towers},
+  author  = {Ribeiro, Jo{\~a}o Alves and Pimenta, Francisco and Ribeiro, Bruno Alves and Tavares, S{\'e}rgio M. O. and Ahmed, Faez},
+  journal = {arXiv preprint arXiv:2502.02594},
+  year    = {2025}
+}
+```
+</details> 
+
+
+## Maintenance & Support
+
+For issues, questions, or feature requests related to FLOAT: [FLOAT Issues](https://github.com/Joao97ribeiro/FLOAT/issues).
+
+## Acknowledgements
+We thank [Garrett Barter](https://github.com/gbarter), [Pietro Bortolotti](https://github.com/ptrbortolotti), and [Daniel Zalkind](https://github.com/dzalkind) from the National Renewable Energy Laboratory (NREL) for their insightful discussions and technical guidance.
+
+This work builds on a fork of [WISDEM](https://github.com/WISDEM/WISDEM). We acknowledge the WISDEM team for creating the open foundation that made this work possible.
