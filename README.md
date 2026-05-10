@@ -4,7 +4,7 @@
 
 # FLOAT: Fatigue-Aware Design Optimization of Wind Turbine Towers
 <p align="center">
-  <a href="https://arxiv.org/abs/2502.02594">
+  <a href="https://arxiv.org/abs/2601.01657">
     <img src="https://img.shields.io/badge/arXiv-2502.02594-b31b1b.svg">
   </a>
   <a href="https://www.apache.org/licenses/LICENSE-2.0">
@@ -33,7 +33,7 @@ This allows **fatigue-aware analysis and design optimization** to be performed *
 
 ## FLOAT Paper 
 
-**FLOAT** is presented in the following scientific paper, where the methodology implemented in this repository is fully described and validated: [**FLOAT: Fatigue-Aware Design Optimization of Wind Turbine Towers**](https://arxiv.org/abs/2502.02594).
+**FLOAT** is presented in the following scientific paper, where the methodology implemented in this repository is fully described and validated: [**FLOAT: Fatigue-Aware Design Optimization of Wind Turbine Towers**](https://arxiv.org/abs/2601.01657).
 
 <p align="center">
   <img src="./images/float_paper_abstract.png" alt="FLOAT paper abstract" width="1000">
@@ -150,7 +150,7 @@ Both examples use the [**IEA-22-280-RWT**](https://github.com/IEAWindSystems/IEA
 
 ## Documentation
 
-The theoretical background and validation of the method are fully presented in the [**FLOAT paper**](https://arxiv.org/abs/2502.02594).  
+The theoretical background and validation of the method are fully presented in the [**FLOAT paper**](https://arxiv.org/abs/2601.01657).  
 Practical usage is demonstrated through the [`examples/`](./examples) scripts and inline docstrings provided in this repository.
 
 
@@ -189,7 +189,7 @@ If you use **FLOAT** in your work, please cite:
 > *FLOAT: Fatigue-Aware Design Optimization of Wind Turbine Towers.*  
 > João Alves Ribeiro, Francisco Pimenta, Bruno Alves Ribeiro, Sérgio M. O. Tavares, Faez Ahmed.  
 > arXiv:2502.02594, 2025.  
-> https://arxiv.org/abs/2502.02594
+> https://arxiv.org/abs/2601.01657
 
 <details>
 <summary>BibTeX</summary>
