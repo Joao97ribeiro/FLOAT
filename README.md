@@ -144,7 +144,7 @@ Both examples use the [**IEA-22-280-RWT**](https://github.com/IEAWindSystems/IEA
 - [`examples/01_tower_fatigue_analysis/`](./examples/01_tower_fatigue_analysis)  
   **Fatigue-Aware Tower Analysis (IEA 22 MW)** — Performs fatigue post-processing of the reference tower using the FLOAT lightweight scaling model.
 
-- [`examples/02_tower_fatigue_analysis/`](./examples/02_tower_fatigue_analysis)  
+- [`examples/02_tower_fatigue_optimization/`](./examples/02_tower_fatigue_optimization)  
   **Fatigue-Aware Tower Optimization (IEA 22 MW)** — Demonstrates the integration of FLOAT inside a tower design optimization loop, where fatigue damage directly influences the optimized tower geometry.
 
 
