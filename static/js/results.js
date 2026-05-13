@@ -22,7 +22,8 @@ const COMMON_LAYOUT = {
 
 const DAMAGE_KEY = "towerse.fatigue_section_damage";
 
-// Build a swept-cylinder Plotly surface for a tower given its z[] / diameter[] arrays.
+// Build a Plotly surface for a tower lying down along the X axis: height
+// runs along X, the circular cross-section lives in the (Y, Z) plane.
 function buildTowerSurface(zArr, dArr, nTheta = 48) {
   const x = [];
   const y = [];
@@ -34,9 +35,9 @@ function buildTowerSurface(zArr, dArr, nTheta = 48) {
     const zRow = [];
     for (let j = 0; j < zArr.length; j++) {
       const r = dArr[j] / 2;
-      xRow.push(r * Math.cos(theta));
-      yRow.push(r * Math.sin(theta));
-      zRow.push(zArr[j]);
+      xRow.push(zArr[j]);             // tower height -> X
+      yRow.push(r * Math.cos(theta)); // cross-section -> Y
+      zRow.push(r * Math.sin(theta)); // cross-section -> Z
     }
     x.push(xRow);
     y.push(yRow);
@@ -73,11 +74,11 @@ const PLOTS = {
         layout: {
           title: "3D tower geometry — toggle cases on/off above",
           scene: {
-            xaxis: { title: "x [m]" },
+            xaxis: { title: "Tower height [m]" },
             yaxis: { title: "y [m]" },
-            zaxis: { title: "Tower height [m]" },
+            zaxis: { title: "z [m]" },
             aspectmode: "data",
-            camera: { eye: { x: 1.6, y: 1.6, z: 0.8 } },
+            camera: { eye: { x: 0.4, y: -2.0, z: 1.0 } },
           },
         },
       };
