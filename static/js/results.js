@@ -274,18 +274,21 @@ const PLOTS = {
     "d_to_t",
     "Diameter-to-thickness constraint evolution",
     "Diameter / thickness [-]",
-    null,
+    160,
+    80,
   ),
   constraint_taper: convergenceBuilder(
     "taper",
     "Taper constraint evolution",
     "Taper ratio [-]",
     null,
+    0.5,
   ),
   constraint_slope: convergenceBuilder(
     "slope",
     "Slope constraint evolution",
     "Slope [-]",
+    null,
     null,
   ),
   constraint_thickness_slope: convergenceBuilder(
@@ -293,16 +296,18 @@ const PLOTS = {
     "Thickness slope constraint evolution",
     "Thickness slope [-]",
     null,
+    null,
   ),
   constraint_frequency: convergenceBuilder(
     "frequency_1",
     "First natural frequency evolution",
     "First natural frequency [Hz]",
-    null,
+    0.38,
+    0.25,
   ),
 };
 
-function convergenceBuilder(key, title, yLabel, upperBound) {
+function convergenceBuilder(key, title, yLabel, upperBound, lowerBound) {
   return {
     needs: "convergence",
     build: (d, active) => {
@@ -339,6 +344,15 @@ function convergenceBuilder(key, title, yLabel, upperBound) {
           mode: "lines",
           name: `Upper bound (${upperBound})`,
           line: { dash: "dash", color: "#444", width: 1.5 },
+        });
+      }
+      if (traces.length && lowerBound != null) {
+        traces.push({
+          x: [0, maxIter],
+          y: [lowerBound, lowerBound],
+          mode: "lines",
+          name: `Lower bound (${lowerBound})`,
+          line: { dash: "dot", color: "#444", width: 1.5 },
         });
       }
       return {
