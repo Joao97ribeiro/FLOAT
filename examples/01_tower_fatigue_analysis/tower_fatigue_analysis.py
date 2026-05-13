@@ -4,7 +4,7 @@ import os
 
 from wisdem import run_wisdem
 
-import src
+import pyfloat
 
 # Path to the shared 22MW fatigue inputs.
 _INPUTS_DIR = os.path.normpath(
@@ -23,7 +23,7 @@ wt_opt, _, opt_options = run_wisdem(
 )
 
 # Log a structured summary table.
-src.TowerSummaryExtractor(wt_opt).log_summary_table(
+pyfloat.TowerSummaryExtractor(wt_opt).log_summary_table(
     title="22MW Tower Fatigue Analysis")
 
 # Output key fatigue results.

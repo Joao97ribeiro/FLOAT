@@ -16,7 +16,7 @@ from absl import app
 from absl import flags
 from absl import logging
 
-import src
+import pyfloat
 
 FLAGS = flags.FLAGS
 
@@ -51,14 +51,14 @@ flags.mark_flag_as_required("openfast_inputs_dir")
 
 def main(_):
     """Update OpenFAST .dat files from a FLOAT-optimized geometry YAML."""
-    manager = src.TowerWisdemManager(
+    manager = pyfloat.TowerWisdemManager(
         files_dir=FLAGS.wisdem_files_dir,
         geometry_filename=FLAGS.geometry_filename,
     )
     heights = manager.get_tower_height()
 
     logging.info("Initiating the update of OpenFAST files.")
-    processor = src.TowerDataProcessor(
+    processor = pyfloat.TowerDataProcessor(
         input_directory=FLAGS.wisdem_files_dir,
         output_directory=FLAGS.wisdem_results_dir,
         aero_elasto_dir=FLAGS.openfast_inputs_dir,

@@ -179,31 +179,6 @@ The repository also ships the full set of WISDEM input files required to drive t
 - [`examples/input_files/22mw_openfast/`](./examples/input_files/22mw_openfast) — OpenFAST AeroDyn/ElastoDyn templates used by example 07 to write the post-optimization `.dat` files.
 
 
-### Running an example
-
-Each numbered folder under `examples/` is self-contained. Examples 01–02 are plain Python scripts you can run end-to-end or step through interactively in an IDE / REPL (e.g. Spyder, PyCharm or VS Code Python Interactive); examples 03–07 are CLI tasks invoked with `--flagfile` pointing at the example's bundled `config.cfg`; example 08 chains 03–07 together. From the repo root:
-
-```bash
-# Script-style example: run end-to-end or open in an IDE / REPL
-python examples/01_tower_fatigue_analysis/tower_fatigue_analysis.py
-
-# CLI-style example: just pass the flagfile shipped with the example
-python examples/04_tower_fatigue_optimization_cli/task.py \
-    --flagfile=examples/04_tower_fatigue_optimization_cli/config.cfg
-
-# Full FLOAT paper workflow (chains 03 -> 07)
-python examples/08_float_paper_workflow/run.py
-```
-
-Outputs land under `outputs/<example_name>/` (or under `outputs/08_float_paper_workflow/` for the chained workflow).
-
-
-## Documentation
-
-The theoretical background and validation of the method are fully presented in the [**FLOAT paper**](https://arxiv.org/abs/2601.01657).  
-Practical usage is demonstrated through the [`examples/`](./examples) scripts and inline docstrings provided in this repository.
-
-
 ## Installation
 
 **FLOAT** runs inside a dedicated Conda environment for full compatibility with [WISDEM](https://github.com/WISDEM/WISDEM).
@@ -228,6 +203,25 @@ pip install --no-deps -e . -v
 ```
 
 
+## Running an Example
+
+Each numbered folder under `examples/` is self-contained. Examples 01–02 are plain Python scripts you can run end-to-end or step through interactively in an IDE / REPL (e.g. Spyder, PyCharm or VS Code Python Interactive); examples 03–07 are CLI tasks invoked with `--flagfile` pointing at the example's bundled `config.cfg`; example 08 chains 03–07 together. From the repo root:
+
+```bash
+# Script-style example: run end-to-end or open in an IDE / REPL
+python examples/01_tower_fatigue_analysis/tower_fatigue_analysis.py
+
+# CLI-style example: just pass the flagfile shipped with the example
+python examples/04_tower_fatigue_optimization_cli/task.py \
+    --flagfile=examples/04_tower_fatigue_optimization_cli/config.cfg
+
+# Full FLOAT paper workflow (chains 03 -> 07)
+python examples/08_float_paper_workflow/run.py
+```
+
+Outputs land under `outputs/<example_name>/` (or under `outputs/08_float_paper_workflow/` for the chained workflow).
+
+
 ## Running the Tests
 
 FLOAT carries the WISDEM test suite under [`wisdem/test/`](./wisdem/test). After
@@ -237,6 +231,12 @@ the full suite from the repo root with:
 ```bash
 python test/test_all.py
 ```
+
+
+## Documentation
+
+The theoretical background and validation of the method are fully presented in the [**FLOAT paper**](https://arxiv.org/abs/2601.01657).  
+Practical usage is demonstrated through the [`examples/`](./examples) scripts and inline docstrings provided in this repository.
 
 
 ## License

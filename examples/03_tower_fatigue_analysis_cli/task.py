@@ -1,6 +1,6 @@
 """Generic CLI runner for FLOAT tower simulations.
 
-Wraps `src.TowerWisdemManager` so any analysis or optimization case can be
+Wraps `pyfloat.TowerWisdemManager` so any analysis or optimization case can be
 launched from the command line by pointing to a directory of input YAMLs.
 
 Example:
@@ -12,7 +12,7 @@ from absl import app
 from absl import flags
 from absl import logging
 
-import src
+import pyfloat
 
 FLAGS = flags.FLAGS
 
@@ -56,10 +56,11 @@ flags.mark_flag_as_required("files_dir")
 def main(_):
     """Execute the FLOAT tower analysis and optionally plot the result."""
     logging.info("Starting FLOAT tower simulation...")
-    manager = src.TowerWisdemManager(files_dir=FLAGS.files_dir,
-                                     geometry_filename=FLAGS.geometry_filename,
-                                     modeling_filename=FLAGS.modeling_filename,
-                                     analysis_filename=FLAGS.analysis_filename)
+    manager = pyfloat.TowerWisdemManager(
+        files_dir=FLAGS.files_dir,
+        geometry_filename=FLAGS.geometry_filename,
+        modeling_filename=FLAGS.modeling_filename,
+        analysis_filename=FLAGS.analysis_filename)
     wt_opt, _, _ = manager.run_simulation(overridden=FLAGS.overridden,
                                           run_only=FLAGS.run_only,
                                           save_summary=FLAGS.save_summary,
@@ -67,7 +68,7 @@ def main(_):
     if FLAGS.save_plot:
         output_dir = FLAGS.output_dir or manager.get_output_folder_and_filename(
         )[0]
-        src.plot_all_profiles(wt_opt, output_dir)
+        pyfloat.plot_all_profiles(wt_opt, output_dir)
         logging.info("Saved tower profile plots to: %s/plots", output_dir)
 
     logging.info("FLOAT tower simulation completed successfully.")
