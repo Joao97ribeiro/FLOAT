@@ -1,7 +1,4 @@
-// FLOAT project page — interactive plots powered by Plotly.
-//
-// Loads pre-extracted JSON data from static/data/ and renders the headline
-// charts that mirror the paper's comparison and convergence plots.
+// FLOAT project page — interactive plot driven by a picker + case toggles.
 
 const COLORS = {
   ref: "#888888",
@@ -16,26 +13,245 @@ const LABELS = {
 };
 
 const COMMON_LAYOUT = {
-  margin: { l: 60, r: 20, t: 50, b: 50 },
+  margin: { l: 60, r: 30, t: 50, b: 60 },
   paper_bgcolor: "rgba(0,0,0,0)",
   plot_bgcolor: "rgba(0,0,0,0)",
-  font: { family: "Helvetica, Arial, sans-serif", size: 12 },
+  font: { family: "Helvetica, Arial, sans-serif", size: 13 },
   hovermode: "closest",
 };
 
-function lineTrace(x, y, tag, name) {
-  return {
-    x: x,
-    y: y,
-    mode: "lines+markers",
-    name: name || LABELS[tag],
-    line: { color: COLORS[tag], width: 2.5 },
-    marker: { size: 5 },
-  };
-}
+const DAMAGE_KEY = "towerse.fatigue_section_damage";
 
-function loadJSON(path) {
-  return fetch(path).then((r) => r.json());
+// Plot definitions: each one returns {traces, layout} given the data + active cases.
+const PLOTS = {
+  damage: {
+    needs: "profiles",
+    build: (d, active) => {
+      const traces = active.map((tag) => ({
+        x: d[tag].section_damage,
+        y: d[tag].z_mean_section,
+        mode: "lines+markers",
+        name: LABELS[tag],
+        line: { color: COLORS[tag], width: 2.5, shape: "hvh" },
+        marker: { size: 6 },
+      }));
+      if (active.length) {
+        const zs = d[active[0]].z_mean_section;
+        traces.push({
+          x: [1, 1],
+          y: [Math.min(...zs), Math.max(...zs)],
+          mode: "lines",
+          name: "Upper bound (1.0)",
+          line: { dash: "dash", color: "#444", width: 1.5 },
+        });
+      }
+      return {
+        traces,
+        layout: {
+          title: "Tower section fatigue damage",
+          xaxis: { title: "Cumulative damage [-] (log)", type: "log" },
+          yaxis: { title: "Tower height [m]" },
+        },
+      };
+    },
+  },
+  geometry: {
+    needs: "profiles",
+    build: (d, active) => ({
+      traces: active.map((tag) => ({
+        x: d[tag].outer_diameter,
+        y: d[tag].z,
+        mode: "lines+markers",
+        name: LABELS[tag],
+        line: { color: COLORS[tag], width: 2.5 },
+      })),
+      layout: {
+        title: "Outer diameter profile",
+        xaxis: { title: "Outer diameter [m]" },
+        yaxis: { title: "Tower height [m]" },
+      },
+    }),
+  },
+  thickness: {
+    needs: "profiles",
+    build: (d, active) => ({
+      traces: active.map((tag) => ({
+        x: d[tag].wall_thickness_mm,
+        y: d[tag].z,
+        mode: "lines+markers",
+        name: LABELS[tag],
+        line: { color: COLORS[tag], width: 2.5, shape: "hvh" },
+      })),
+      layout: {
+        title: "Wall thickness profile",
+        xaxis: { title: "Wall thickness [mm]" },
+        yaxis: { title: "Tower height [m]" },
+      },
+    }),
+  },
+  stress: {
+    needs: "profiles",
+    build: (d, active) => ({
+      traces: active.map((tag) => ({
+        x: d[tag].stress_MPa,
+        y: d[tag].z_stress,
+        mode: "lines+markers",
+        name: LABELS[tag],
+        line: { color: COLORS[tag], width: 2.5 },
+      })),
+      layout: {
+        title: "Axial stress profile",
+        xaxis: { title: "Axial stress [MPa]" },
+        yaxis: { title: "Tower height [m]" },
+      },
+    }),
+  },
+  deflection: {
+    needs: "profiles",
+    build: (d, active) => ({
+      traces: active.map((tag) => ({
+        x: d[tag].deflection,
+        y: d[tag].z_deflection,
+        mode: "lines+markers",
+        name: LABELS[tag],
+        line: { color: COLORS[tag], width: 2.5 },
+      })),
+      layout: {
+        title: "Tower deflection profile",
+        xaxis: { title: "Lateral deflection [m]" },
+        yaxis: { title: "Tower height [m]" },
+      },
+    }),
+  },
+  shell_buckling: {
+    needs: "profiles",
+    build: (d, active) => ({
+      traces: active.map((tag) => ({
+        x: d[tag].shell_buckling,
+        y: d[tag].z_buckling,
+        mode: "lines+markers",
+        name: LABELS[tag],
+        line: { color: COLORS[tag], width: 2.5 },
+      })),
+      layout: {
+        title: "Shell buckling profile",
+        xaxis: { title: "Shell buckling utilisation [-]" },
+        yaxis: { title: "Tower height [m]" },
+      },
+    }),
+  },
+  global_buckling: {
+    needs: "profiles",
+    build: (d, active) => ({
+      traces: active.map((tag) => ({
+        x: d[tag].global_buckling,
+        y: d[tag].z_buckling,
+        mode: "lines+markers",
+        name: LABELS[tag],
+        line: { color: COLORS[tag], width: 2.5 },
+      })),
+      layout: {
+        title: "Global buckling profile",
+        xaxis: { title: "Global buckling utilisation [-]" },
+        yaxis: { title: "Tower height [m]" },
+      },
+    }),
+  },
+  objective: {
+    needs: "convergence",
+    build: (d, active) => ({
+      traces: active
+        .filter((tag) => d[tag])
+        .map((tag) => ({
+          x: d[tag].iterations,
+          y: d[tag].objective_values,
+          mode: "lines+markers",
+          name: LABELS[tag],
+          line: { color: COLORS[tag], width: 2.5 },
+          marker: { size: 7 },
+        })),
+      layout: {
+        title: "Objective function (tower mass) evolution",
+        xaxis: { title: "Iteration", dtick: 1 },
+        yaxis: { title: "Tower mass [t]" },
+      },
+    }),
+  },
+  constraint_damage: convergenceBuilder(
+    DAMAGE_KEY,
+    "Fatigue damage constraint evolution",
+    "Fatigue damage [-]",
+    1.0,
+  ),
+  constraint_stress: convergenceBuilder(
+    "stress",
+    "Stress constraint evolution",
+    "Stress ratio [-]",
+    1.0,
+  ),
+  constraint_global_buckling: convergenceBuilder(
+    "global_buckling",
+    "Global buckling constraint evolution",
+    "Global buckling ratio [-]",
+    1.0,
+  ),
+  constraint_shell_buckling: convergenceBuilder(
+    "shell_buckling",
+    "Shell buckling constraint evolution",
+    "Shell buckling ratio [-]",
+    1.0,
+  ),
+};
+
+function convergenceBuilder(key, title, yLabel, upperBound) {
+  return {
+    needs: "convergence",
+    build: (d, active) => {
+      const traces = [];
+      let maxIter = 0;
+      active.forEach((tag) => {
+        if (!d[tag] || !d[tag].constraints_max[key]) return;
+        const cmax = d[tag].constraints_max[key];
+        const cmin = d[tag].constraints_min[key];
+        traces.push({
+          x: d[tag].iterations,
+          y: cmax,
+          mode: "lines+markers",
+          name: `${LABELS[tag]} max`,
+          line: { color: COLORS[tag], width: 2.5 },
+          marker: { size: 6 },
+        });
+        if (cmin) {
+          traces.push({
+            x: d[tag].iterations,
+            y: cmin,
+            mode: "lines+markers",
+            name: `${LABELS[tag]} min`,
+            line: { color: COLORS[tag], width: 1.5, dash: "dash" },
+            marker: { size: 5, symbol: "x" },
+          });
+        }
+        maxIter = Math.max(maxIter, ...d[tag].iterations);
+      });
+      if (traces.length && upperBound != null) {
+        traces.push({
+          x: [0, maxIter],
+          y: [upperBound, upperBound],
+          mode: "lines",
+          name: `Upper bound (${upperBound})`,
+          line: { dash: "dash", color: "#444", width: 1.5 },
+        });
+      }
+      return {
+        traces,
+        layout: {
+          title,
+          xaxis: { title: "Iteration", dtick: 1 },
+          yaxis: { title: yLabel },
+        },
+      };
+    },
+  };
 }
 
 function setupBibtexCopy() {
@@ -59,143 +275,39 @@ function setupBibtexCopy() {
   });
 }
 
+function setupInteractivePlot(profiles, convergence) {
+  const picker = document.getElementById("plot-picker");
+  const checkboxes = document.querySelectorAll("#case-toggles input");
+  const target = document.getElementById("plot-main");
+  if (!picker || !target) return;
+
+  function render() {
+    const def = PLOTS[picker.value];
+    if (!def) return;
+    const data = def.needs === "convergence" ? convergence : profiles;
+    const active = Array.from(checkboxes)
+      .filter((c) => c.checked)
+      .map((c) => c.dataset.case);
+    const { traces, layout } = def.build(data, active);
+    Plotly.react(
+      target,
+      traces,
+      Object.assign({}, COMMON_LAYOUT, layout),
+      { responsive: true, displaylogo: false },
+    );
+  }
+
+  picker.addEventListener("change", render);
+  checkboxes.forEach((c) => c.addEventListener("change", render));
+  render();
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   setupBibtexCopy();
-  loadJSON("static/data/tower_profiles.json").then((d) => {
-    // Damage profile
-    const damageTraces = ["ref", "opt1", "opt2"].map((tag) => ({
-      x: d[tag].section_damage,
-      y: d[tag].z_mean_section,
-      mode: "lines+markers",
-      name: LABELS[tag],
-      line: { color: COLORS[tag], width: 2.5, shape: "hvh" },
-      marker: { size: 5 },
-    }));
-    damageTraces.push({
-      x: [1, 1],
-      y: [Math.min(...d.ref.z_mean_section), Math.max(...d.ref.z_mean_section)],
-      mode: "lines",
-      name: "Upper bound (1.0)",
-      line: { dash: "dash", color: "#444", width: 1.5 },
-    });
-    Plotly.newPlot(
-      "plot-damage",
-      damageTraces,
-      Object.assign({}, COMMON_LAYOUT, {
-        title: "Tower section fatigue damage",
-        xaxis: { title: "Cumulative damage [-]", type: "log" },
-        yaxis: { title: "Tower height [m]" },
-      }),
-      { responsive: true },
-    );
-
-    // Geometry: outer diameter vs height
-    Plotly.newPlot(
-      "plot-geometry",
-      ["ref", "opt1", "opt2"].map((tag) =>
-        lineTrace(d[tag].outer_diameter, d[tag].z, tag),
-      ),
-      Object.assign({}, COMMON_LAYOUT, {
-        title: "Outer diameter profile",
-        xaxis: { title: "Outer diameter [m]" },
-        yaxis: { title: "Tower height [m]" },
-      }),
-      { responsive: true },
-    );
-
-    // Wall thickness
-    Plotly.newPlot(
-      "plot-thickness",
-      ["ref", "opt1", "opt2"].map((tag) =>
-        lineTrace(d[tag].wall_thickness_mm, d[tag].z, tag),
-      ),
-      Object.assign({}, COMMON_LAYOUT, {
-        title: "Wall thickness profile",
-        xaxis: { title: "Wall thickness [mm]" },
-        yaxis: { title: "Tower height [m]" },
-      }),
-      { responsive: true },
-    );
-
-    // Stress
-    Plotly.newPlot(
-      "plot-stress",
-      ["ref", "opt1", "opt2"].map((tag) =>
-        lineTrace(d[tag].stress_MPa, d[tag].z_stress, tag),
-      ),
-      Object.assign({}, COMMON_LAYOUT, {
-        title: "Axial stress profile",
-        xaxis: { title: "Axial stress [MPa]" },
-        yaxis: { title: "Tower height [m]" },
-      }),
-      { responsive: true },
-    );
-  });
-
-  loadJSON("static/data/optimization_convergence.json").then((d) => {
-    // Objective function convergence
-    const objTraces = ["opt1", "opt2"].map((tag) => ({
-      x: d[tag].iterations,
-      y: d[tag].objective_values.map((v) => v / 1000),
-      mode: "lines+markers",
-      name: LABELS[tag],
-      line: { color: COLORS[tag], width: 2.5 },
-      marker: { size: 6 },
-    }));
-    Plotly.newPlot(
-      "plot-objective",
-      objTraces,
-      Object.assign({}, COMMON_LAYOUT, {
-        title: "Objective function (tower mass) evolution",
-        xaxis: { title: "Iteration" },
-        yaxis: { title: "Tower mass [t]" },
-      }),
-      { responsive: true },
-    );
-
-    // Fatigue damage constraint evolution (max value)
-    const damKey = "towerse.fatigue_section_damage";
-    const constraintTraces = [];
-    ["opt1", "opt2"].forEach((tag) => {
-      const cmax = d[tag].constraints_max[damKey];
-      const cmin = d[tag].constraints_min[damKey];
-      if (cmax) {
-        constraintTraces.push({
-          x: d[tag].iterations,
-          y: cmax,
-          mode: "lines+markers",
-          name: `${LABELS[tag]} max`,
-          line: { color: COLORS[tag], width: 2.5 },
-          marker: { size: 5 },
-        });
-      }
-      if (cmin) {
-        constraintTraces.push({
-          x: d[tag].iterations,
-          y: cmin,
-          mode: "lines+markers",
-          name: `${LABELS[tag]} min`,
-          line: { color: COLORS[tag], width: 1.5, dash: "dash" },
-          marker: { size: 4, symbol: "x" },
-        });
-      }
-    });
-    constraintTraces.push({
-      x: [0, Math.max(...d.opt1.iterations, ...d.opt2.iterations)],
-      y: [1, 1],
-      mode: "lines",
-      name: "Upper bound (1.0)",
-      line: { dash: "dash", color: "#444", width: 1.5 },
-    });
-    Plotly.newPlot(
-      "plot-constraint-damage",
-      constraintTraces,
-      Object.assign({}, COMMON_LAYOUT, {
-        title: "Fatigue damage constraint evolution",
-        xaxis: { title: "Iteration" },
-        yaxis: { title: "Fatigue damage [-]" },
-      }),
-      { responsive: true },
-    );
+  Promise.all([
+    fetch("static/data/tower_profiles.json").then((r) => r.json()),
+    fetch("static/data/optimization_convergence.json").then((r) => r.json()),
+  ]).then(([profiles, convergence]) => {
+    setupInteractivePlot(profiles, convergence);
   });
 });

@@ -117,16 +117,54 @@
 <section class="section has-background-light">
   <div class="container is-max-desktop">
     <h2 class="title is-3">Interactive Results</h2>
-    <p class="subtitle is-6">Live plots from the optimization data shipped in <a href="https://github.com/Joao97ribeiro/FLOAT/tree/float-stable/outputs/08_float_paper_workflow"><code>outputs/08_float_paper_workflow/</code></a>. Hover for values, click legend entries to toggle cases.</p>
+    <p class="subtitle is-6">Live plots from the data shipped in <a href="https://github.com/Joao97ribeiro/FLOAT/tree/float-stable/outputs/08_float_paper_workflow"><code>outputs/08_float_paper_workflow/</code></a>.</p>
 
-    <div class="columns is-multiline">
-      <div class="column is-half"><div id="plot-damage" style="height:480px;"></div></div>
-      <div class="column is-half"><div id="plot-geometry" style="height:480px;"></div></div>
-      <div class="column is-half"><div id="plot-thickness" style="height:480px;"></div></div>
-      <div class="column is-half"><div id="plot-stress" style="height:480px;"></div></div>
-      <div class="column is-half"><div id="plot-objective" style="height:480px;"></div></div>
-      <div class="column is-half"><div id="plot-constraint-damage" style="height:480px;"></div></div>
+    <div class="box">
+      <div class="columns is-vcentered is-multiline">
+        <div class="column is-half">
+          <label class="label is-small">Plot</label>
+          <div class="select is-fullwidth">
+            <select id="plot-picker">
+              <optgroup label="Tower profiles">
+                <option value="damage">Fatigue damage profile</option>
+                <option value="geometry">Outer diameter profile</option>
+                <option value="thickness">Wall thickness profile</option>
+                <option value="stress">Axial stress profile</option>
+                <option value="deflection">Tower deflection profile</option>
+                <option value="shell_buckling">Shell buckling profile</option>
+                <option value="global_buckling">Global buckling profile</option>
+              </optgroup>
+              <optgroup label="Optimization convergence">
+                <option value="objective">Objective (tower mass) evolution</option>
+                <option value="constraint_damage">Fatigue damage constraint evolution</option>
+                <option value="constraint_stress">Stress constraint evolution</option>
+                <option value="constraint_global_buckling">Global buckling constraint evolution</option>
+                <option value="constraint_shell_buckling">Shell buckling constraint evolution</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+        <div class="column is-half">
+          <label class="label is-small">Cases</label>
+          <div class="field is-grouped" id="case-toggles">
+            <label class="checkbox" style="margin-right:1rem;">
+              <input type="checkbox" data-case="ref" checked>
+              <span style="color:#888888;font-weight:600;"> Reference</span>
+            </label>
+            <label class="checkbox" style="margin-right:1rem;">
+              <input type="checkbox" data-case="opt1" checked>
+              <span style="color:#1f77b4;font-weight:600;"> Opt1</span>
+            </label>
+            <label class="checkbox">
+              <input type="checkbox" data-case="opt2" checked>
+              <span style="color:#d62728;font-weight:600;"> Opt2</span>
+            </label>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <div id="plot-main" style="height:560px;"></div>
   </div>
 </section>
 
