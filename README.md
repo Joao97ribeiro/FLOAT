@@ -2,10 +2,13 @@
   <img src="./images/float_logo.png" alt="FLOAT Logo" width="300">
 </p>
 
-# FLOAT: Fatigue-Aware Design Optimization of Wind Turbine Towers
+# FLOAT: Fatigue-Aware Design Optimization of Floating Offshore Wind Turbine Towers
 <p align="center">
   <a href="https://arxiv.org/abs/2601.01657">
-    <img src="https://img.shields.io/badge/arXiv-2502.02594-b31b1b.svg">
+    <img src="https://img.shields.io/badge/arXiv-2601.01657-b31b1b.svg">
+  </a>
+  <a href="https://joao97ribeiro.github.io/FLOAT/">
+    <img src="https://img.shields.io/badge/project-page-2c5282.svg">
   </a>
   <a href="https://www.apache.org/licenses/LICENSE-2.0">
     <img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg">
