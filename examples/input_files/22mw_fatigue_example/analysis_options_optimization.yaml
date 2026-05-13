@@ -1,6 +1,6 @@
 # Generic analysis options for tower fatigue optimization
 general:
-    folder_output: outputs/22mw_fatigue_optimization
+    folder_output: outputs/02_tower_fatigue_optimization
     fname_output: tower_fatigue_22mw_opt
 
 design_variables:
