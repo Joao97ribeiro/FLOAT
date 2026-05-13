@@ -31,8 +31,8 @@ def run_task(task_relpath, flags):
     args = [sys.executable, str(ROOT / task_relpath)]
     for key, value in flags.items():
         args.append(f"--{key}={value}")
-    # Prepend the FLOAT root to PYTHONPATH so the task's `import src` resolves
-    # to FLOAT's package even when another `src/` is on sys.path.
+    # Prepend the FLOAT root to PYTHONPATH so the task's `import pyfloat`
+    # resolves to FLOAT's package even when another `pyfloat/` is on sys.path.
     env = os.environ.copy()
     env["PYTHONPATH"] = os.pathsep.join([str(ROOT),
                                          env.get("PYTHONPATH",

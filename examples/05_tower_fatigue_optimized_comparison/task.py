@@ -17,7 +17,7 @@ from absl import app
 from absl import flags
 from absl import logging
 
-import src
+import pyfloat
 
 FLAGS = flags.FLAGS
 
@@ -59,8 +59,8 @@ def main(_):
     labels = FLAGS.labels
     csv_paths = FLAGS.csv_paths
 
-    manager = src.TowerWisdemManager(files_dir=FLAGS.files_dir,
-                                     analysis_filename=FLAGS.analysis_filename)
+    manager = pyfloat.TowerWisdemManager(
+        files_dir=FLAGS.files_dir, analysis_filename=FLAGS.analysis_filename)
     _, constraints_bounds = manager.get_design_constraints()
     _, design_variables_bounds = manager.get_design_variables()
     bounds = {**constraints_bounds, **design_variables_bounds}
@@ -68,9 +68,9 @@ def main(_):
     logging.info("Starting comparison of FLOAT tower results (ref=%s)...",
                  labels[FLAGS.ref_idx])
 
-    comparator = src.TowerWisdemComparator(results_paths=csv_paths,
-                                           output_dir=FLAGS.output_dir,
-                                           labels=labels)
+    comparator = pyfloat.TowerWisdemComparator(results_paths=csv_paths,
+                                               output_dir=FLAGS.output_dir,
+                                               labels=labels)
     comparator.plot_all(bounds=bounds, save_svg=FLAGS.save_svg)
     comparator.extract_summary_comparison(save_summary=FLAGS.save_summary,
                                           log_summary=FLAGS.log_summary,

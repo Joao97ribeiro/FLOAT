@@ -4,7 +4,7 @@ import os
 
 from wisdem import run_wisdem
 
-import src
+import pyfloat
 
 # Path to the shared 22MW fatigue inputs.
 _INPUTS_DIR = os.path.normpath(
@@ -26,16 +26,16 @@ wt_opt, _, opt_options = run_wisdem(
 )
 
 # Recover design variable + constraint bounds from the analysis YAML.
-manager = src.TowerWisdemManager(files_dir=_INPUTS_DIR,
-                                 geometry_filename=_GEOMETRY,
-                                 modeling_filename=_MODELING,
-                                 analysis_filename=_ANALYSIS)
+manager = pyfloat.TowerWisdemManager(files_dir=_INPUTS_DIR,
+                                     geometry_filename=_GEOMETRY,
+                                     modeling_filename=_MODELING,
+                                     analysis_filename=_ANALYSIS)
 _, dv_bounds = manager.get_design_variables()
 _, constraint_bounds = manager.get_design_constraints()
 bounds = {**dv_bounds, **constraint_bounds}
 
 # Log a structured summary table.
-src.TowerSummaryExtractor(wt_opt).log_summary_table(
+pyfloat.TowerSummaryExtractor(wt_opt).log_summary_table(
     title="22MW Tower Fatigue Optimization")
 
 # Output key geometry results.
@@ -54,7 +54,7 @@ print("Fatigue Damage by Section:", section_damage)
 print("Fatigue Constant C:", constant_c)
 
 # Plot tower geometry + damage profile with the optimization bounds overlaid.
-fig_path = src.plot_tower_profiles(wt_opt,
-                                   opt_options["general"]["folder_output"],
-                                   bounds=bounds)
+fig_path = pyfloat.plot_tower_profiles(wt_opt,
+                                       opt_options["general"]["folder_output"],
+                                       bounds=bounds)
 print("Saved tower profiles figure to:", fig_path)

@@ -13,7 +13,7 @@ from absl import app
 from absl import flags
 from absl import logging
 
-import src
+import pyfloat
 
 FLAGS = flags.FLAGS
 
@@ -47,13 +47,13 @@ flags.mark_flag_as_required("labels")
 
 def main(_):
     """Analyze results from one or more FLOAT tower optimizations."""
-    manager = src.TowerWisdemManager(files_dir=FLAGS.files_dir,
-                                     analysis_filename=FLAGS.analysis_filename)
+    manager = pyfloat.TowerWisdemManager(
+        files_dir=FLAGS.files_dir, analysis_filename=FLAGS.analysis_filename)
     _, constraints_bounds = manager.get_design_constraints()
 
     logging.info("Starting analysis of FLOAT tower optimization results...")
 
-    results_reader = src.TowerOptimizationResultsComparator(
+    results_reader = pyfloat.TowerOptimizationResultsComparator(
         sql_paths=FLAGS.sql_paths,
         csv_paths=FLAGS.csv_paths,
         labels=FLAGS.labels,
