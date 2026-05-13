@@ -128,7 +128,17 @@
   <div class="container is-max-desktop">
     <h2 class="title is-3">Method</h2>
     <div class="content has-text-justified">
-      <p>FLOAT extends WISDEM's native <code>TowerSE</code> module with a new <strong>fatigue-aware model</strong>: it takes a precomputed high-fidelity damage distribution from a reference tower and scales it to any candidate geometry via analytical relationships in radius and wall thickness. Fatigue damage then becomes a regular WISDEM constraint that the optimizer can drive.</p>
+      <p><strong>FLOAT</strong> accelerates the iterative design of FOWT towers under fatigue constraints. High-fidelity simulations are still used for reference assessment and final validation, but the framework <strong>avoids rerunning them at each optimization step</strong> by relying on a lightweight fatigue model that scales precomputed damage to any candidate geometry.</p>
+
+      <p>The workflow runs in <strong>two stages</strong>:</p>
+      <ol>
+        <li><strong>Numerical simulation</strong> (stage 1) — the <em>Wind–Wave Sampler</em> selects a small representative subset of environmental conditions; the <em>Numerical Simulator</em> runs them in OpenFAST with pitch/heave–platform calibration and HPC acceleration; the <em>Frequency Response Analyzer</em> and the <em>Fatigue Analyzer</em> process the outputs, validating the floater frequency correction and calibrating the lightweight fatigue estimator.</li>
+        <li><strong>Design optimization</strong> (stage 2) — the <em>Design Optimizer</em> iteratively updates the tower geometry under fatigue constraints, using the <em>Fatigue Estimator</em> (a lightweight model) to predict damage without rerunning high-fidelity simulations. The optimized design is then re-simulated to validate it against the reference.</li>
+      </ol>
+
+      <p>Validation passes when (i) the lifetime fatigue damage in every tower section is below the admissible limit, and (ii) the FLOAT-to-OpenFAST relative error in section-wise lifetime fatigue damage is below 10%. If either fails, the calibration is refreshed and the cycle restarts.</p>
+
+      <p>The framework is integrated into <a href="https://github.com/WISDEM/WISDEM">WISDEM</a> through a new <code>TowerFatigueDamage</code> OpenMDAO component in the native <code>TowerSE</code> module, so fatigue damage becomes a regular WISDEM constraint that the optimizer can drive.</p>
     </div>
     <figure class="image">
       <img src="static/images/float_paper_workflow.png" alt="FLOAT paper workflow">
