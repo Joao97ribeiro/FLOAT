@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FLOAT — Fatigue-Aware Design Optimization of Floating Offshore Wind Turbine Towers</title>
+  <meta name="description" content="FLOAT: a lightweight fatigue-aware tower design framework for floating offshore wind turbines, integrated into WISDEM.">
+  <meta property="og:title" content="FLOAT: Fatigue-Aware Design Optimization of Floating Offshore Wind Turbine Towers">
+  <meta property="og:description" content="Fast cumulative tower fatigue damage estimation during design optimization, without rerunning high-fidelity simulations.">
+  <meta property="og:image" content="static/images/float_workflow.png">
+  <link rel="icon" type="image/png" href="static/images/float_logo.png">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="static/css/style.css">
+  <script defer src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <script defer src="static/js/results.js"></script>
+</head>
+<body>
+
+<!-- ============ HERO ============ -->
+<section class="hero is-light">
+  <div class="hero-body has-text-centered">
+    <div class="container is-max-desktop">
+      <img src="static/images/float_logo.png" alt="FLOAT logo" style="max-width:220px;margin-bottom:1rem;">
+      <h1 class="title is-2 publication-title">
+        FLOAT: Fatigue-Aware Design Optimization of Floating Offshore Wind Turbine Towers
+      </h1>
+      <div class="is-size-5 publication-authors">
+        <span class="author-block"><a href="mailto:jpar@mit.edu">João Alves Ribeiro</a><sup>1,2</sup>,</span>
+        <span class="author-block">Francisco Pimenta<sup>2</sup>,</span>
+        <span class="author-block">Bruno Alves Ribeiro<sup>3,4</sup>,</span>
+        <span class="author-block">Sérgio M. O. Tavares<sup>5</sup>,</span>
+        <span class="author-block"><a href="mailto:faez@mit.edu">Faez Ahmed</a><sup>1</sup></span>
+      </div>
+      <div class="is-size-6 publication-affiliations" style="margin-top:0.4rem;">
+        <span><sup>1</sup>MIT</span> &nbsp;
+        <span><sup>2</sup>University of Porto</span> &nbsp;
+        <span><sup>3</sup>TU Delft</span> &nbsp;
+        <span><sup>4</sup>Brown University</span> &nbsp;
+        <span><sup>5</sup>University of Aveiro</span>
+      </div>
+
+      <div class="publication-links" style="margin-top:1.5rem;">
+        <a href="https://arxiv.org/abs/2601.01657" class="button is-rounded is-dark">
+          <span class="icon"><i class="fas fa-file-pdf"></i></span><span>Paper</span>
+        </a>
+        <a href="https://arxiv.org/abs/2601.01657" class="button is-rounded is-dark">
+          <span class="icon"><i class="ai ai-arxiv"></i><i class="fas fa-archive"></i></span><span>arXiv</span>
+        </a>
+        <a href="https://github.com/Joao97ribeiro/FLOAT" class="button is-rounded is-dark">
+          <span class="icon"><i class="fab fa-github"></i></span><span>Code</span>
+        </a>
+        <a href="https://github.com/Joao97ribeiro/FLOAT-22-280-RWT-Semi" class="button is-rounded is-dark">
+          <span class="icon"><i class="fab fa-github"></i></span><span>Tower</span>
+        </a>
+        <a href="https://github.com/IEAWindSystems/IEA-22-280-RWT/pull/164" class="button is-rounded is-warning">
+          <span class="icon"><i class="fas fa-water"></i></span><span>IEA Task 55</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ABSTRACT ============ -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3">Abstract</h2>
+    <div class="content has-text-justified">
+      <p><strong>FLOAT</strong> is a <strong>lightweight fatigue-aware tower design framework</strong> integrated into <a href="https://github.com/WISDEM/WISDEM">WISDEM</a>. It enables <strong>fast estimation of cumulative tower fatigue damage</strong> by scaling precomputed high-fidelity fatigue results from a reference wind turbine tower to any new tower geometry under evaluation.</p>
+      <p>This allows <strong>fatigue-aware analysis and design optimization</strong> to be performed <strong>without rerunning expensive aero-hydro-servo-elastic simulations</strong>, reducing computational cost by several orders of magnitude while maintaining validated accuracy with low error.</p>
+    </div>
+    <figure class="image">
+      <img src="static/images/float_workflow.png" alt="FLOAT workflow">
+    </figure>
+  </div>
+</section>
+
+<!-- ============ KEY RESULTS ============ -->
+<section class="section has-background-light">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Key Results</h2>
+    <div class="columns is-multiline is-centered">
+      <div class="column is-3"><div class="box has-text-centered">
+        <p class="title is-2 has-text-primary">~33×</p>
+        <p class="subtitle is-6">fatigue lifetime extension<br>(9 months → 25 years)</p>
+      </div></div>
+      <div class="column is-3"><div class="box has-text-centered">
+        <p class="title is-2 has-text-primary">−8.6%</p>
+        <p class="subtitle is-6">mean relative error<br>vs 6,468 OpenFAST sims</p>
+      </div></div>
+      <div class="column is-3"><div class="box has-text-centered">
+        <p class="title is-2 has-text-primary">~98%</p>
+        <p class="subtitle is-6">damage reduction at<br>the tower base</p>
+      </div></div>
+      <div class="column is-3"><div class="box has-text-centered">
+        <p class="title is-2 has-text-primary">10⁻¹×</p>
+        <p class="subtitle is-6">computational cost vs<br>traditional fatigue loops</p>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ METHOD / PAPER FIGURE ============ -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3">Method</h2>
+    <div class="content has-text-justified">
+      <p>FLOAT extends WISDEM's native <code>TowerSE</code> module with a new <strong>fatigue-aware model</strong>: it takes a precomputed high-fidelity damage distribution from a reference tower and scales it to any candidate geometry via analytical relationships in radius and wall thickness. Fatigue damage then becomes a regular WISDEM constraint that the optimizer can drive.</p>
+    </div>
+    <figure class="image">
+      <img src="static/images/float_paper_workflow.png" alt="FLOAT paper workflow">
+    </figure>
+  </div>
+</section>
+
+<!-- ============ INTERACTIVE RESULTS ============ -->
+<section class="section has-background-light">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3">Interactive Results</h2>
+    <p class="subtitle is-6">Live plots from the optimization data shipped in <a href="https://github.com/Joao97ribeiro/FLOAT/tree/float-stable/outputs/08_float_paper_workflow"><code>outputs/08_float_paper_workflow/</code></a>. Hover for values, click legend entries to toggle cases.</p>
+
+    <div class="columns is-multiline">
+      <div class="column is-half"><div id="plot-damage" style="height:480px;"></div></div>
+      <div class="column is-half"><div id="plot-geometry" style="height:480px;"></div></div>
+      <div class="column is-half"><div id="plot-thickness" style="height:480px;"></div></div>
+      <div class="column is-half"><div id="plot-stress" style="height:480px;"></div></div>
+      <div class="column is-half"><div id="plot-objective" style="height:480px;"></div></div>
+      <div class="column is-half"><div id="plot-constraint-damage" style="height:480px;"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RESOURCES ============ -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3">Resources</h2>
+    <div class="columns is-multiline">
+      <div class="column is-half">
+        <div class="box">
+          <p class="title is-5"><i class="fab fa-github"></i> &nbsp;<a href="https://github.com/Joao97ribeiro/FLOAT">FLOAT (framework)</a></p>
+          <p>The <code>pyfloat</code> Python package, the <code>TowerFatigueDamage</code> OpenMDAO component inside <code>wisdem/towerse/</code>, eight examples (CLI tasks + end-to-end paper workflow), and bundled inputs for the IEA-22-280-RWT. <code>pip install --no-deps -e .</code> after the conda env.</p>
+        </div>
+      </div>
+      <div class="column is-half">
+        <div class="box">
+          <p class="title is-5"><i class="fab fa-github"></i> &nbsp;<a href="https://github.com/Joao97ribeiro/FLOAT-22-280-RWT-Semi">FLOAT-22-280-RWT-Semi (tower)</a></p>
+          <p>The fatigue-redesigned IEA 22 MW semi-submersible tower as a ready-to-use OpenFAST 3.5.2 model + windIO ontology. Drop into your simulation pipeline directly.</p>
+        </div>
+      </div>
+      <div class="column is-half">
+        <div class="box">
+          <p class="title is-5"><i class="fas fa-file-pdf"></i> &nbsp;<a href="https://arxiv.org/abs/2601.01657">Paper (arXiv 2601.01657)</a></p>
+          <p>Full methodology, scaling law derivation, validation against 6,468 wind–wave OpenFAST simulations, and the IEA-22-280-RWT redesign case study.</p>
+        </div>
+      </div>
+      <div class="column is-half">
+        <div class="box">
+          <p class="title is-5"><i class="fas fa-water"></i> &nbsp;<a href="https://github.com/IEAWindSystems/IEA-22-280-RWT/pull/164">IEA Wind Task 55 REFWIND</a></p>
+          <p>The FLOAT-redesigned tower is in the process of being adopted by the official IEA 22-MW offshore reference wind turbine. Track integration in PR #164.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CITATION ============ -->
+<section class="section has-background-light">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3">Citation</h2>
+    <pre style="white-space:pre-wrap;"><code>@misc{ribeiro2026floatfatigueawaredesignoptimization,
+      title={FLOAT: Fatigue-Aware Design Optimization of Floating Offshore Wind Turbine Towers},
+      author={João Alves Ribeiro and Francisco Pimenta and Bruno Alves Ribeiro and Sérgio M. O. Tavares and Faez Ahmed},
+      year={2026},
+      eprint={2601.01657},
+      archivePrefix={arXiv},
+      primaryClass={cs.CE},
+      url={https://arxiv.org/abs/2601.01657},
+}</code></pre>
+  </div>
+</section>
+
+<!-- ============ ACKNOWLEDGEMENTS ============ -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3">Acknowledgements</h2>
+    <div class="content has-text-justified">
+      <p>We thank <a href="https://github.com/gbarter">Garrett Barter</a>, <a href="https://github.com/ptrbortolotti">Pietro Bortolotti</a>, and <a href="https://github.com/dzalkind">Daniel Zalkind</a> from the National Renewable Energy Laboratory (NREL) for their insightful discussions and technical guidance. This work builds on a fork of <a href="https://github.com/WISDEM/WISDEM">WISDEM</a>.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="content has-text-centered">
+    <p>Page template adapted from the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template">Academic Project Page Template</a>. Source on <a href="https://github.com/Joao97ribeiro/FLOAT/tree/float-stable/docs">GitHub</a>.</p>
+  </div>
+</footer>
+
+</body>
+</html>

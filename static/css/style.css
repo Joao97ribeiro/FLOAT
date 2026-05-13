@@ -1,0 +1,26 @@
+/* FLOAT project page custom styles */
+
+.publication-title {
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.publication-authors a {
+  color: #1d3557;
+}
+
+.publication-links .button {
+  margin: 0.25rem;
+}
+
+.box {
+  height: 100%;
+}
+
+pre code {
+  font-size: 0.85rem;
+}
+
+.hero.is-light img {
+  border-radius: 8px;
+}
