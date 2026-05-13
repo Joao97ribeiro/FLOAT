@@ -1,0 +1,3 @@
+general:
+    folder_output: outputs/08_float_paper_workflow/ref
+    fname_output: ref_tower

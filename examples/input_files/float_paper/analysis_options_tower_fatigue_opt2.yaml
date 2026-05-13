@@ -1,0 +1,60 @@
+general:
+    folder_output: outputs/08_float_paper_workflow/opt2
+    fname_output: opt2_tower
+    
+design_variables:
+  tower:
+    outer_diameter:
+      flag: True
+      lower_bound: 6.0
+      upper_bound: 12.0
+
+    layer_thickness:
+      flag: True
+      lower_bound: 0.0375
+      upper_bound: 0.150
+
+merit_figure: tower_mass
+
+constraints:
+  tower:
+    stress:
+      flag: True
+    global_buckling:
+      flag: True
+    shell_buckling:
+      flag: True
+    d_to_t:
+      flag: True 
+      lower_bound: 80.0
+      upper_bound: 160.0
+    taper:
+      flag: True
+      lower_bound: 0.5
+    slope:
+      flag: True
+    thickness_slope:
+      flag: True
+    frequency_1:
+      flag: True
+      lower_bound: 0.25
+      upper_bound: 0.38
+  user:
+      - name: towerse.fatigue_section_damage
+        upper_bound: [0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9]
+
+driver:
+    optimization:
+        flag: True         # Flag to enable optimization
+        tol: 1.e-3         # Optimality tolerance
+        max_major_iter: 50    # Maximum number of major design iterations (SNOPT)
+        max_minor_iter: 200   # Maximum number of minor design iterations (SNOPT)
+        max_iter: 100         # Maximum number of iterations (SLSQP)
+        solver: SLSQP         # Optimization solver. Other options are 'SLSQP' - 'CONMIN'
+        step_size: 1.e-4      # Step size for finite differencing
+        form: central       # Finite differencing mode, either forward or central
+        debug_print: True
+
+recorder:
+    flag: True              # Flag to activate OpenMDAO recorder
+    file_name: log_opt.sql  # Name of OpenMDAO recorder

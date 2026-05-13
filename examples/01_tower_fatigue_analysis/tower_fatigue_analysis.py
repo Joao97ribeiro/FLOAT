@@ -4,26 +4,30 @@ import os
 
 from wisdem import run_wisdem
 
-# File Paths Setup
-mydir = os.path.dirname(os.path.realpath(__file__))
+import src
 
-# Path to input files
-fname_wt_input = mydir + os.sep + "IEA-22-280-RWT_Floater.yaml"
-fname_modeling_options = mydir + os.sep + "modeling_options_tower_fatigue.yaml"
-fname_analysis_options = mydir + os.sep + "analysis_options.yaml"
+# Path to the shared 22MW fatigue inputs.
+_INPUTS_DIR = os.path.normpath(
+    os.path.join(os.path.dirname(__file__), "..", "input_files",
+                 "22mw_fatigue_example"))
 
-# By setting hub height to 0.0, WISDEM uses the tower definition
-overrides = {'configuration.hub_height_user': 0.0}
+# Don't enforce hub_height, use the tower definition instead.
+_OVERRIDES = {"configuration.hub_height_user": 0.0}
 
-# Run WISDEM
-wt_opt, analysis_options, opt_options = run_wisdem(fname_wt_input,
-                                                   fname_modeling_options,
-                                                   fname_analysis_options,
-                                                   overridden_values=overrides)
+# Run WISDEM.
+wt_opt, _, opt_options = run_wisdem(
+    os.path.join(_INPUTS_DIR, "IEA-22-280-RWT_Floater.yaml"),
+    os.path.join(_INPUTS_DIR, "modeling_options_tower_fatigue.yaml"),
+    os.path.join(_INPUTS_DIR, "analysis_options.yaml"),
+    overridden_values=_OVERRIDES,
+)
 
-# Output Key Fatigue Results
+# Log a structured summary table.
+src.TowerSummaryExtractor(wt_opt).log_summary_table(
+    title="22MW Tower Fatigue Analysis")
+
+# Output key fatigue results.
 section_damage = wt_opt.get_val("towerse.fatigue_section_damage")
 constant_c = wt_opt.get_val("towerse.fatigue_c")
-
 print("Fatigue Damage by Section:", section_damage)
 print("Fatigue Constant C:", constant_c)

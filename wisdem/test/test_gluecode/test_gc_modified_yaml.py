@@ -13,6 +13,8 @@ test_dir = (
     + os.sep
     + "examples"
     + os.sep
+    + "wisdem"
+    + os.sep
     + "02_reference_turbines"
     + os.sep
 )

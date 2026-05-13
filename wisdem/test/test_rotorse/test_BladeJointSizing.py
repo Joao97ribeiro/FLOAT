@@ -12,7 +12,7 @@ from wisdem import run_wisdem
 class TestRC(unittest.TestCase):
     def testBladeJointSizerBAR_USC(self):
         wisdem_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))
-        example_dir = os.path.join(wisdem_dir, "examples", "03_blade")  # get path example 03_blade
+        example_dir = os.path.join(wisdem_dir, "examples", "wisdem", "03_blade")  # get path example 03_blade
         fname_modeling_options = os.path.join(example_dir, "modeling_options.yaml")
         fname_wt_input = os.path.join(example_dir, "BAR_USC.yaml")
         fname_analysis_options = os.path.join(example_dir, "analysis_options_no_opt.yaml")
