@@ -38,7 +38,29 @@ function loadJSON(path) {
   return fetch(path).then((r) => r.json());
 }
 
+function setupBibtexCopy() {
+  const btn = document.getElementById("copy-bibtex");
+  const code = document.getElementById("bibtex-content");
+  if (!btn || !code) return;
+  btn.addEventListener("click", () => {
+    navigator.clipboard
+      .writeText(code.innerText)
+      .then(() => {
+        btn.innerHTML =
+          '<span class="icon"><i class="fas fa-check"></i></span><span>Copied!</span>';
+        btn.classList.add("is-success");
+        setTimeout(() => {
+          btn.innerHTML =
+            '<span class="icon"><i class="fas fa-copy"></i></span><span>Copy</span>';
+          btn.classList.remove("is-success");
+        }, 1800);
+      })
+      .catch((err) => console.error("Copy failed", err));
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+  setupBibtexCopy();
   loadJSON("static/data/tower_profiles.json").then((d) => {
     // Damage profile
     const damageTraces = ["ref", "opt1", "opt2"].map((tag) => ({
