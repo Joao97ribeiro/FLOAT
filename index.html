@@ -78,23 +78,27 @@
     </div>
 
     <h2 class="title is-3 has-text-centered">Paper Highlights</h2>
-    <div class="columns is-multiline is-centered">
-      <div class="column is-3"><div class="box has-text-centered">
+    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:1rem;">
+      <div class="box has-text-centered" style="width:180px;flex:0 0 auto;">
+        <p class="title is-3" style="color:#b02c27;margin-bottom:0.5rem;">New tower</p>
+        <p class="subtitle is-6">fatigue-oriented redesign of the IEA 22 MW floating tower (avoiding resonance)</p>
+      </div>
+      <div class="box has-text-centered" style="width:180px;flex:0 0 auto;">
         <p class="title is-2" style="color:#b02c27;">~33×</p>
         <p class="subtitle is-6">fatigue lifetime extension<br>(9 months → 25 years)</p>
-      </div></div>
-      <div class="column is-3"><div class="box has-text-centered">
+      </div>
+      <div class="box has-text-centered" style="width:180px;flex:0 0 auto;">
         <p class="title is-2" style="color:#294366;">−8.6%</p>
-        <p class="subtitle is-6">mean relative error<br>vs 6,468 OpenFAST sims</p>
-      </div></div>
-      <div class="column is-3"><div class="box has-text-centered">
-        <p class="title is-2" style="color:#b02c27;">~98%</p>
-        <p class="subtitle is-6">damage reduction at<br>the tower base</p>
-      </div></div>
-      <div class="column is-3"><div class="box has-text-centered">
-        <p class="title is-2" style="color:#7cc0cd;">10⁻¹×</p>
-        <p class="subtitle is-6">computational cost vs<br>traditional fatigue loops</p>
-      </div></div>
+        <p class="subtitle is-6">mean error vs 6,468 high-fidelity simulations</p>
+      </div>
+      <div class="box has-text-centered" style="width:180px;flex:0 0 auto;">
+        <p class="title is-2" style="color:#294366;">250×</p>
+        <p class="subtitle is-6">HPC speed-up on 6,468 cases (~$47 cloud cost)</p>
+      </div>
+      <div class="box has-text-centered" style="width:180px;flex:0 0 auto;">
+        <p class="title is-3" style="color:#7cc0cd;margin-bottom:0.5rem;">Open source</p>
+        <p class="subtitle is-6">FLOAT framework + redesigned 22 MW tower released</p>
+      </div>
     </div>
   </div>
 </section>
