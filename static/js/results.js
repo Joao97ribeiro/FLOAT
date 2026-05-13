@@ -22,8 +22,67 @@ const COMMON_LAYOUT = {
 
 const DAMAGE_KEY = "towerse.fatigue_section_damage";
 
+// Build a swept-cylinder Plotly surface for a tower given its z[] / diameter[] arrays.
+function buildTowerSurface(zArr, dArr, nTheta = 48) {
+  const x = [];
+  const y = [];
+  const z = [];
+  for (let i = 0; i < nTheta; i++) {
+    const theta = (i / (nTheta - 1)) * 2 * Math.PI;
+    const xRow = [];
+    const yRow = [];
+    const zRow = [];
+    for (let j = 0; j < zArr.length; j++) {
+      const r = dArr[j] / 2;
+      xRow.push(r * Math.cos(theta));
+      yRow.push(r * Math.sin(theta));
+      zRow.push(zArr[j]);
+    }
+    x.push(xRow);
+    y.push(yRow);
+    z.push(zRow);
+  }
+  return { x, y, z };
+}
+
 // Plot definitions: each one returns {traces, layout} given the data + active cases.
 const PLOTS = {
+  tower_3d: {
+    needs: "profiles",
+    build: (d, active) => {
+      const traces = active.map((tag) => {
+        const { x, y, z } = buildTowerSurface(d[tag].z, d[tag].outer_diameter);
+        return {
+          type: "surface",
+          x,
+          y,
+          z,
+          showscale: false,
+          opacity: 0.85,
+          colorscale: [
+            [0, COLORS[tag]],
+            [1, COLORS[tag]],
+          ],
+          name: LABELS[tag],
+          hovertemplate:
+            `${LABELS[tag]}<br>r=√(x²+y²) [m], z=%{z:.2f} m<extra></extra>`,
+        };
+      });
+      return {
+        traces,
+        layout: {
+          title: "3D tower geometry — toggle cases on/off above",
+          scene: {
+            xaxis: { title: "x [m]" },
+            yaxis: { title: "y [m]" },
+            zaxis: { title: "Tower height [m]" },
+            aspectmode: "data",
+            camera: { eye: { x: 1.6, y: 1.6, z: 0.8 } },
+          },
+        },
+      };
+    },
+  },
   damage: {
     needs: "profiles",
     build: (d, active) => {
