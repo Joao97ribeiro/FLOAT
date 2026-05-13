@@ -78,7 +78,18 @@
       Fast tower fatigue estimation during design optimization, without rerunning high-fidelity simulations.
     </p>
     <figure class="image" style="margin-bottom:1.5rem;">
-      <img src="static/images/float_workflow.png" alt="FLOAT workflow">
+      <div style="overflow:hidden;height:0;padding-bottom:32%;position:relative;">
+        <img src="static/images/float_workflow.png" alt="FLOAT workflow"
+             style="position:absolute;top:0;left:0;width:100%;height:auto;">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:0.6rem;">
+        <div style="background:#7cc0cd;color:#fff;padding:0.55rem 1rem;border-radius:6px;text-align:center;font-weight:600;font-size:0.95rem;letter-spacing:0.03em;">
+          Traditional &middot; Slow &middot; Computationally Intensive
+        </div>
+        <div style="background:#294366;color:#fff;padding:0.55rem 1rem;border-radius:6px;text-align:center;font-weight:600;font-size:0.95rem;letter-spacing:0.03em;">
+          FLOAT &middot; Fast &middot; Lightweight
+        </div>
+      </div>
     </figure>
 
     <h2 class="title is-3 has-text-centered" style="margin-bottom:2rem;">Paper Highlights</h2>
@@ -138,7 +149,7 @@
 
       <p>Validation passes when (i) the lifetime fatigue damage in every tower section is below the admissible limit, and (ii) the FLOAT-to-OpenFAST relative error in section-wise lifetime fatigue damage is below 10%. If either fails, the calibration is refreshed and the cycle restarts.</p>
 
-      <p>The framework is integrated into <a href="https://github.com/WISDEM/WISDEM">WISDEM</a> through a new <a href="https://github.com/Joao97ribeiro/FLOAT/blob/float-stable/wisdem/towerse/tower.py#L11-L170"><code>TowerFatigueDamage</code></a> OpenMDAO component in the native <code>TowerSE</code> module, <a href="https://github.com/Joao97ribeiro/FLOAT/blob/float-stable/wisdem/towerse/tower.py#L718-L733">wired into the group at <code>tower.py#L718-L733</code></a>, so fatigue damage becomes a regular WISDEM constraint that the optimizer can drive.</p>
+      <p>The framework is integrated into <a href="https://github.com/WISDEM/WISDEM">WISDEM</a> through a new <code>TowerFatigueDamage</code> OpenMDAO component in the native <code>TowerSE</code> module — see the <a href="https://github.com/Joao97ribeiro/FLOAT">FLOAT repository</a> for the source. Fatigue damage then becomes a regular WISDEM constraint that the optimizer can drive.</p>
     </div>
     <figure class="image">
       <img src="static/images/float_paper_workflow.png" alt="FLOAT paper workflow">
