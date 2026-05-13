@@ -10,6 +10,9 @@
   <a href="https://joao97ribeiro.github.io/FLOAT/">
     <img src="https://img.shields.io/badge/project-page-2c5282.svg">
   </a>
+  <a href="https://github.com/Joao97ribeiro/FLOAT-22-280-RWT-Semi">
+    <img src="https://img.shields.io/badge/tower-FLOAT--22--280--RWT--Semi-1f6feb.svg">
+  </a>
   <a href="https://www.apache.org/licenses/LICENSE-2.0">
     <img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg">
   </a>
