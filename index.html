@@ -204,11 +204,17 @@
 <!-- ============ CITATION ============ -->
 <section class="section has-background-light">
   <div class="container is-max-desktop">
-    <h2 class="title is-3">Citation</h2>
-    <div class="bibtex-block" style="position:relative;">
-      <button id="copy-bibtex" class="button is-small is-rounded" style="position:absolute; top:0.5rem; right:0.5rem;" title="Copy BibTeX to clipboard">
-        <span class="icon"><i class="fas fa-copy"></i></span><span>Copy</span>
-      </button>
+    <div class="level is-mobile" style="margin-bottom:1rem;">
+      <div class="level-left">
+        <h2 class="title is-3" style="margin-bottom:0;">Citation</h2>
+      </div>
+      <div class="level-right">
+        <button id="copy-bibtex" class="button is-rounded is-dark" title="Copy BibTeX to clipboard">
+          <span class="icon"><i class="fas fa-copy"></i></span><span>Copy BibTeX</span>
+        </button>
+      </div>
+    </div>
+    <div class="bibtex-block">
       <pre style="white-space:pre-wrap;"><code id="bibtex-content">@misc{ribeiro2026floatfatigueawaredesignoptimization,
       title={FLOAT: Fatigue-Aware Design Optimization of Floating Offshore Wind Turbine Towers},
       author={João Alves Ribeiro and Francisco Pimenta and Bruno Alves Ribeiro and Sérgio M. O. Tavares and Faez Ahmed},
@@ -221,6 +227,7 @@
     </div>
   </div>
 </section>
+
 
 <!-- ============ ACKNOWLEDGEMENTS ============ -->
 <section class="section">
