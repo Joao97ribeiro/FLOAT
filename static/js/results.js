@@ -74,9 +74,18 @@ const PLOTS = {
         layout: {
           title: "3D tower geometry — toggle cases on/off above",
           scene: {
-            xaxis: { title: "Tower height [m]" },
-            yaxis: { title: "y [m]" },
-            zaxis: { title: "z [m]" },
+            xaxis: {
+              title: { text: "Tower height [m]", font: { size: 10 } },
+              tickfont: { size: 9 },
+            },
+            yaxis: {
+              title: { text: "y [m]", font: { size: 10 } },
+              tickfont: { size: 9 },
+            },
+            zaxis: {
+              title: { text: "z [m]", font: { size: 10 } },
+              tickfont: { size: 9 },
+            },
             aspectmode: "data",
             camera: { eye: { x: 0.4, y: -2.0, z: 1.0 } },
           },
