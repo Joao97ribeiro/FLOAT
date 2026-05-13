@@ -158,8 +158,8 @@
           <label class="label is-small">Plot</label>
           <div class="select is-fullwidth">
             <select id="plot-picker">
+              <option value="tower_3d">3D tower geometry (overlaid)</option>
               <optgroup label="Tower profiles">
-                <option value="tower_3d">3D tower geometry (overlaid)</option>
                 <option value="damage">Fatigue damage profile</option>
                 <option value="geometry">Outer diameter profile</option>
                 <option value="thickness">Wall thickness profile</option>
@@ -170,10 +170,15 @@
               </optgroup>
               <optgroup label="Optimization convergence">
                 <option value="objective">Objective (tower mass) evolution</option>
-                <option value="constraint_damage">Fatigue damage constraint evolution</option>
-                <option value="constraint_stress">Stress constraint evolution</option>
-                <option value="constraint_global_buckling">Global buckling constraint evolution</option>
-                <option value="constraint_shell_buckling">Shell buckling constraint evolution</option>
+                <option value="constraint_damage">Fatigue damage constraint</option>
+                <option value="constraint_stress">Stress constraint</option>
+                <option value="constraint_global_buckling">Global buckling constraint</option>
+                <option value="constraint_shell_buckling">Shell buckling constraint</option>
+                <option value="constraint_d_to_t">Diameter-to-thickness constraint</option>
+                <option value="constraint_taper">Taper constraint</option>
+                <option value="constraint_slope">Slope constraint</option>
+                <option value="constraint_thickness_slope">Thickness slope constraint</option>
+                <option value="constraint_frequency">First natural frequency constraint</option>
               </optgroup>
             </select>
           </div>

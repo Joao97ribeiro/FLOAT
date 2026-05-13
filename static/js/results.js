@@ -270,6 +270,36 @@ const PLOTS = {
     "Shell buckling ratio [-]",
     1.0,
   ),
+  constraint_d_to_t: convergenceBuilder(
+    "d_to_t",
+    "Diameter-to-thickness constraint evolution",
+    "Diameter / thickness [-]",
+    null,
+  ),
+  constraint_taper: convergenceBuilder(
+    "taper",
+    "Taper constraint evolution",
+    "Taper ratio [-]",
+    null,
+  ),
+  constraint_slope: convergenceBuilder(
+    "slope",
+    "Slope constraint evolution",
+    "Slope [-]",
+    null,
+  ),
+  constraint_thickness_slope: convergenceBuilder(
+    "thickness_slope",
+    "Thickness slope constraint evolution",
+    "Thickness slope [-]",
+    null,
+  ),
+  constraint_frequency: convergenceBuilder(
+    "frequency_1",
+    "First natural frequency evolution",
+    "First natural frequency [Hz]",
+    null,
+  ),
 };
 
 function convergenceBuilder(key, title, yLabel, upperBound) {
