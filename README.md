@@ -30,6 +30,17 @@ This allows **fatigue-aware analysis and design optimization** to be performed *
 - **Sérgio M. O. Tavares** (University of Aveiro)
 - **Faez Ahmed** (MIT) — [faez@mit.edu](mailto:faez@mit.edu)
 
+---
+
+<h3 align="center">⚠️ The FLOAT-redesigned tower is being adopted by the official <a href="https://iea-wind.org/task55/">IEA Wind Task 55 REFWIND</a> reference turbine.</h3>
+
+<p align="center">
+  Track its integration into the <strong>IEA 22-MW offshore reference wind turbine</strong> in
+  <a href="https://github.com/IEAWindSystems/IEA-22-280-RWT/pull/164">IEAWindSystems/IEA-22-280-RWT PR #164</a>.
+</p>
+
+---
+
 
 ## FLOAT Paper 
 
@@ -52,7 +63,7 @@ The paper introduces the full **FLOAT architecture**:
   <img src="./images/float_paper_workflow.png" alt="FLOAT paper workflow" width="1000">
 </p>
 
-**Note:** This repository currently includes **only Module 6: the Fatigue Estimator**, which corresponds to the lightweight fatigue scaling model.
+**Note:** This repository currently includes **only Module 6, the Fatigue Estimator**, which corresponds to the lightweight fatigue scaling model.
 
 The remaining components of the full FLOAT framework:
 
@@ -66,11 +77,12 @@ are planned to be released as open-source in future updates. The **5. Design Opt
 
 ## What FLOAT Adds to WISDEM
 
-This repository extends the native **_TowerSE_** module of **WISDEM** with a new **fatigue-aware model** for fast tower fatigue assessment and optimization.
+**FLOAT lets you analyse and optimize a wind turbine tower with a per-section fatigue damage constraint, without ever re-running a high-fidelity simulation.** To do this, it extends WISDEM's native **_TowerSE_** module with a lightweight fatigue-aware model that scales a precomputed reference damage distribution to every candidate tower geometry the optimizer visits.
 
-Key additions include:
-- A new `fatigue` block in the **TowerSE modeling options input file**.
-- Native integration with the **WISDEM optimization workflow** for fatigue-aware tower design and optimization.
+In practice, this means:
+- A new `fatigue` block in the **TowerSE modeling options input file**, where you supply the reference tower and its precomputed `section_damage`.
+- Native integration with the **WISDEM optimization workflow** so the fatigue damage shows up like any other TowerSE constraint.
+- **Visualization and reporting utilities** for inspecting the results: overlay comparison plots of competing tower designs (geometry, fatigue damage, stress, buckling, deflection, mode shapes), convergence plots of the optimization run (objective and per-constraint evolution against their bounds), and JSON / log summary tables.
 
 All remaining WISDEM modules remain unchanged and follow the official upstream implementation.
 
@@ -110,7 +122,7 @@ where, for a tower with $N$ sections:
   - `wall_thickness` (array, size $N$): wall thickness at each **tower section** [m]
   - `z` (array, size $N+1$): physical height coordinate at each **section transition** [m]
 
-- The **high-fidelity reference fatigue damage distribution**:
+- The **high-fidelity reference fatigue damage distribution** — this is the entry point for the precomputed damage values coming from the high-fidelity OpenFAST simulations (Modules 1–4 of the full FLOAT framework). FLOAT scales this reference distribution to every new candidate tower geometry without re-running OpenFAST:
   - `section_damage` (array, size $N$): cumulative fatigue damage per **tower section**, evaluated at the **section midpoint**
 
 
@@ -133,9 +145,9 @@ During the **TowerSE** execution, FLOAT automatically computes the fatigue damag
 
 ## Examples
 
-The repository includes **two example cases** demonstrating how to run **fatigue-aware tower analysis with FLOAT inside WISDEM**.
+The repository includes **eight example cases** demonstrating how to run **fatigue-aware tower analysis with FLOAT inside WISDEM**, from a single notebook-style call up to a full multi-step optimization workflow.
 
-Both examples use the [**IEA-22-280-RWT**](https://github.com/IEAWindSystems/IEA-22-280-RWT) reference turbine.
+All examples use the [**IEA-22-280-RWT**](https://github.com/IEAWindSystems/IEA-22-280-RWT) reference turbine.
 
 <p align="center">
   <img src="./images/iea_22mw.gif" alt="IEA 22 MW Floating Wind Turbine" width="300">
@@ -146,6 +158,44 @@ Both examples use the [**IEA-22-280-RWT**](https://github.com/IEAWindSystems/IEA
 
 - [`examples/02_tower_fatigue_optimization/`](./examples/02_tower_fatigue_optimization)  
   **Fatigue-Aware Tower Optimization (IEA 22 MW)** — Demonstrates the integration of FLOAT inside a tower design optimization loop, where fatigue damage directly influences the optimized tower geometry.
+
+The CLI-style examples below wrap the same workflow into reusable tasks with `--flagfile` configs, and are chained together by example 08 to reproduce the FLOAT paper results end-to-end:
+
+- [`examples/03_tower_fatigue_analysis_cli/`](./examples/03_tower_fatigue_analysis_cli) — CLI version of example 01: fatigue-aware tower analysis (reference case).
+- [`examples/04_tower_fatigue_optimization_cli/`](./examples/04_tower_fatigue_optimization_cli) — CLI version of example 02: fatigue-aware tower optimization with profile plots.
+- [`examples/05_tower_fatigue_optimized_comparison/`](./examples/05_tower_fatigue_optimized_comparison) — Overlay comparison of final tower designs (CSVs) against a chosen reference. Useful for visually inspecting how candidate towers differ in geometry, fatigue damage, stress, buckling, deflection, and mode shapes.
+- [`examples/06_tower_fatigue_optimization_comparison/`](./examples/06_tower_fatigue_optimization_comparison) — Convergence comparison of multiple optimization runs (SQL + CSV). Useful for inspecting how the objective and each constraint evolved during the optimizer's iterations across different runs.
+- [`examples/07_tower_fatigue_optimized_to_openfast/`](./examples/07_tower_fatigue_optimized_to_openfast) — Regenerates AeroDyn/ElastoDyn `.dat` files from an optimized WISDEM YAML. Useful after FLOAT produces an optimized tower and you want to plug it straight into OpenFAST for a high-fidelity simulation, without re-typing or copying values by hand.
+
+- [`examples/08_float_paper_workflow/`](./examples/08_float_paper_workflow)  
+  **FLOAT paper reproduction workflow** — Chains examples 03→07 to produce the reference case, two optimization runs (`opt1`, `opt2`), the comparison plots, and the OpenFAST `.dat` files for the final design. Run it with `python examples/08_float_paper_workflow/run.py`.
+
+  > **Note:** All `section_damage` arrays consumed by FLOAT in this workflow are pre-computed from real high-fidelity OpenFAST simulations described in the FLOAT paper — one per reference tower (`ref`, `opt1`, `opt2`), each living in the `fatigue` block of the matching modeling YAML at [`examples/input_files/float_paper/`](./examples/input_files/float_paper). FLOAT scales these reference distributions across all candidate tower designs visited during optimization, so no OpenFAST run is triggered at design time.
+
+The repository also ships the full set of WISDEM input files required to drive the fatigue-aware optimization out of the box, so no extra setup is needed:
+
+- [`examples/input_files/float_paper/`](./examples/input_files/float_paper) — paper reproduction (reference + opt1 + opt2). Contains the geometry file (`IEA-22-280-RWT.yaml`), the modeling options with the `fatigue` block populated from the high-fidelity campaign, and the analysis options with the constraints and design variables used in the paper.
+- [`examples/input_files/22mw_fatigue_example/`](./examples/input_files/22mw_fatigue_example) — minimal IEA 22 MW set-up for the standalone examples (`analysis_options.yaml`, `analysis_options_optimization.yaml`, `modeling_options_tower_fatigue.yaml`, `IEA-22-280-RWT.yaml`, `IEA-22-280-RWT_Floater.yaml`).
+- [`examples/input_files/22mw_openfast/`](./examples/input_files/22mw_openfast) — OpenFAST AeroDyn/ElastoDyn templates used by example 07 to write the post-optimization `.dat` files.
+
+
+### Running an example
+
+Each numbered folder under `examples/` is self-contained. Examples 01–02 are plain Python scripts you can run end-to-end or step through interactively in an IDE / REPL (e.g. Spyder, PyCharm or VS Code Python Interactive); examples 03–07 are CLI tasks invoked with `--flagfile` pointing at the example's bundled `config.cfg`; example 08 chains 03–07 together. From the repo root:
+
+```bash
+# Script-style example: run end-to-end or open in an IDE / REPL
+python examples/01_tower_fatigue_analysis/tower_fatigue_analysis.py
+
+# CLI-style example: just pass the flagfile shipped with the example
+python examples/04_tower_fatigue_optimization_cli/task.py \
+    --flagfile=examples/04_tower_fatigue_optimization_cli/config.cfg
+
+# Full FLOAT paper workflow (chains 03 -> 07)
+python examples/08_float_paper_workflow/run.py
+```
+
+Outputs land under `outputs/<example_name>/` (or under `outputs/08_float_paper_workflow/` for the chained workflow).
 
 
 ## Documentation
@@ -170,9 +220,22 @@ conda activate float-env
 ```
 The environment name `"float-env"` is only a suggestion. You may choose any name.
 
+> **Note (compilers):** FLOAT is a fork of WISDEM and builds its Fortran/C extensions from source via `meson + gcc/gfortran` during the next step. The provided `environment.yml` installs the conda-forge `compilers` metapackage so the toolchain is in place on Linux/macOS. If you create the environment by other means (custom env, system Python, Windows), make sure a working `gcc`/`g++`/`gfortran` is on `PATH` before running the `pip install` below — on Debian/Ubuntu this is `sudo apt install build-essential gfortran`, on macOS `xcode-select --install` plus `brew install gcc`, on Windows `m2w64-toolchain` from conda-forge.
+
 ### 2.  Install FLOAT in Developer Mode
 ```bash
 pip install --no-deps -e . -v
+```
+
+
+## Running the Tests
+
+FLOAT carries the WISDEM test suite under [`wisdem/test/`](./wisdem/test). After
+the environment is set up and the package is installed in developer mode, run
+the full suite from the repo root with:
+
+```bash
+python test/test_all.py
 ```
 
 
@@ -186,23 +249,26 @@ See the [LICENSE](./LICENSE) file for full details or view it online at: [Apache
 
 If you use **FLOAT** in your work, please cite:
 
-> *FLOAT: Fatigue-Aware Design Optimization of Wind Turbine Towers.*  
+> *FLOAT: Fatigue-Aware Design Optimization of Floating Offshore Wind Turbine Towers.*  
 > João Alves Ribeiro, Francisco Pimenta, Bruno Alves Ribeiro, Sérgio M. O. Tavares, Faez Ahmed.  
-> arXiv:2502.02594, 2025.  
+> arXiv:2601.01657, 2026.  
 > https://arxiv.org/abs/2601.01657
 
 <details>
 <summary>BibTeX</summary>
 
 ```bibtex
-@article{ribeiro2025float,
-  title   = {FLOAT: Fatigue-Aware Design Optimization of Wind Turbine Towers},
-  author  = {Ribeiro, Jo{\~a}o Alves and Pimenta, Francisco and Ribeiro, Bruno Alves and Tavares, S{\'e}rgio M. O. and Ahmed, Faez},
-  journal = {arXiv preprint arXiv:2502.02594},
-  year    = {2025}
+@misc{ribeiro2026floatfatigueawaredesignoptimization,
+      title={FLOAT: Fatigue-Aware Design Optimization of Floating Offshore Wind Turbine Towers}, 
+      author={João Alves Ribeiro and Francisco Pimenta and Bruno Alves Ribeiro and Sérgio M. O. Tavares and Faez Ahmed},
+      year={2026},
+      eprint={2601.01657},
+      archivePrefix={arXiv},
+      primaryClass={cs.CE},
+      url={https://arxiv.org/abs/2601.01657}, 
 }
 ```
-</details> 
+</details>
 
 
 ## Maintenance & Support
