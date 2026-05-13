@@ -3,6 +3,7 @@ channels:
   - defaults
 
 dependencies:
+  - python<3.13  # numpy<2.0 has no wheels for Python 3.13
   - coveralls
   - cython
   - jsonschema
@@ -12,7 +13,7 @@ dependencies:
   - moorpy=1.1.0
   - ninja
   - nlopt<=2.8
-  - numpy
+  - numpy<2.0  # WISDEM/openmdao stack not yet compatible with NumPy 2.x
   - numpydoc
   - openmdao
   - openpyxl
@@ -31,12 +32,13 @@ dependencies:
   - sortedcontainers
   - statsmodels
   - swig
+  - compilers  # provides gcc/g++/gfortran on Linux/macOS; required by setup.py
   - pip:
     - orbit-nrel>=1.2.1
     - dearpygui
-# Needs to be done outside of environment file:
-#  - m2w64-toolchain # [win]
-#  - libpython # [win]
-#  - compilers # [not win]
-#  - petsc4py # [not win]
-#  - mpi4py (only needed if local system has mpi built and is used)
+# Windows-only extras (install separately if needed):
+#  - m2w64-toolchain
+#  - libpython
+# Optional extras:
+#  - petsc4py        # not on Windows
+#  - mpi4py          # only if the system has MPI built and you want to use it
