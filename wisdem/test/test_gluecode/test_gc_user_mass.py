@@ -11,7 +11,7 @@ import numpy.testing as npt
 
 test_dir = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))),
-    "examples", "11_user_custom")
+    "examples", "wisdem", "11_user_custom")
 
 
 class TestRegression(unittest.TestCase):

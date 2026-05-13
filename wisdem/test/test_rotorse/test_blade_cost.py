@@ -8,8 +8,8 @@ from wisdem.glue_code.gc_LoadInputs import WindTurbineOntologyPython
 from wisdem.glue_code.gc_PoseOptimization import PoseOptimization
 
 wisdem_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))
-example_dir02 = os.path.join(wisdem_dir, "examples", "02_reference_turbines")  # get path example 02_reference_turbines
-example_dir03 = os.path.join(wisdem_dir, "examples", "03_blade")  # get path example 03_blade
+example_dir02 = os.path.join(wisdem_dir, "examples", "wisdem", "02_reference_turbines")  # get path example 02_reference_turbines
+example_dir03 = os.path.join(wisdem_dir, "examples", "wisdem", "03_blade")  # get path example 03_blade
 fname_opt_options = os.path.join(example_dir02, "analysis_options.yaml")
 accuracy = 0
 

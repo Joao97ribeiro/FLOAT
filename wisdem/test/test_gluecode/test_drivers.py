@@ -7,6 +7,7 @@ from wisdem.glue_code.runWISDEM import run_wisdem
 test_dir = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))),
     "examples",
+    "wisdem",
     "05_tower_monopile")
 
 fname_wt_input = os.path.join(test_dir, "nrel5mw_tower.yaml")

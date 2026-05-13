@@ -8,7 +8,7 @@ thisdir = os.path.dirname(os.path.realpath(__file__))
 # Find examples directory- outside the module path
 
 root_dir = os.path.dirname(os.path.dirname(os.path.dirname(thisdir)))
-examples_dir = os.path.join(root_dir, "examples")
+examples_dir = os.path.join(root_dir, "examples", "wisdem")
 all_examples = Path(examples_dir).rglob("*.py") if os.path.exists(examples_dir) else []
 
 # 02_ref turbines are regression tested in test_gluecode, no need to duplicate runtime
