@@ -61,7 +61,7 @@ Using the **FLOAT** methodology, the [**IEA 22 MW**](https://github.com/IEAWindS
 - **Validation accuracy:** agreement with **6,468 coupled wind–wave high-fidelity OpenFAST simulations** with a **mean relative error of −8.6%**  
 - **Computational speed-up:** FLOAT removes the need to re-run full aero-hydro-servo-elastic simulations during redesign, cutting computational cost by **several orders of magnitude** compared with traditional fatigue-driven design loops.
 
-The final redesigned tower configuration is openly available here: [**FLOAT-22-280-RWT-Semi**](https://github.com/Joao97ribeiro/FLOAT-22-280-RWT-Semi).
+The final redesigned tower configuration is openly available here: [**FLOAT-22-280-RWT-Semi**](https://github.com/Joao97ribeiro/FLOAT-22-280-RWT-Semi). Explore the paper's results as **interactive plots** on the [**FLOAT project page**](https://joao97ribeiro.github.io/FLOAT/).
 
 The paper introduces the full **FLOAT architecture**:
 
@@ -174,7 +174,7 @@ The CLI-style examples below wrap the same workflow into reusable tasks with `--
 - [`examples/07_tower_fatigue_optimized_to_openfast/`](./examples/07_tower_fatigue_optimized_to_openfast) — Regenerates AeroDyn/ElastoDyn `.dat` files from an optimized WISDEM YAML. Useful after FLOAT produces an optimized tower and you want to plug it straight into OpenFAST for a high-fidelity simulation, without re-typing or copying values by hand.
 
 - [`examples/08_float_paper_workflow/`](./examples/08_float_paper_workflow)  
-  **FLOAT paper reproduction workflow** — Chains examples 03→07 to produce the reference case, two optimization runs (`opt1`, `opt2`), the comparison plots, and the OpenFAST `.dat` files for the final design. Run it with `python examples/08_float_paper_workflow/run.py`.
+  **FLOAT paper reproduction workflow** — Chains examples 03→07 to produce the reference case, two optimization runs (`opt1`, `opt2`), the comparison plots, and the OpenFAST `.dat` files for the final design. Run it with `python examples/08_float_paper_workflow/run.py`. The outputs of this workflow are also available as **interactive plots** on the [FLOAT project page](https://joao97ribeiro.github.io/FLOAT/).
 
   > **Note:** All `section_damage` arrays consumed by FLOAT in this workflow are pre-computed from real high-fidelity OpenFAST simulations described in the FLOAT paper — one per reference tower (`ref`, `opt1`, `opt2`), each living in the `fatigue` block of the matching modeling YAML at [`examples/input_files/float_paper/`](./examples/input_files/float_paper). FLOAT scales these reference distributions across all candidate tower designs visited during optimization, so no OpenFAST run is triggered at design time.
 
